@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Nailed by Mari — Cleveland Nail Technician</title>
+<meta name="description" content="Faith · Nails · Peace. Licensed nail technician in Cleveland, OH — acrylic, Gel-X, builder gel & toe care. Book your appointment." />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blush:#F4E7E1; --paper:#FBF4F0; --wine:#5E2237; --wine-deep:#3D1626;
+    --rose:#B87A7A; --gold:#C29A5B; --ink:#33222A; --line:rgba(94,34,55,.16);
+    --arch:22vw;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;background:var(--blush);color:var(--ink);
+    font-family:"DM Sans",system-ui,sans-serif;font-size:17px;line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{font-family:"Cormorant Garamond",Georgia,serif;font-weight:500;color:var(--wine);margin:0;line-height:1.05}
+  a{color:inherit}
+  img{max-width:100%;display:block}
+  .wrap{width:min(1080px,92vw);margin-inline:auto}
+  .eyebrow{font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;color:var(--rose);font-weight:600}
+  .serif-it{font-family:"Cormorant Garamond",serif;font-style:italic}
+
+  /* ——— nav ——— */
+  nav{position:sticky;top:0;z-index:40;background:rgba(244,231,225,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .nav-in{display:flex;align-items:center;justify-content:space-between;padding:.85rem 0}
+  .brand{font-family:"Cormorant Garamond",serif;font-size:1.35rem;color:var(--wine);letter-spacing:.01em}
+  .brand b{font-weight:600}
+  .nav-links{display:flex;gap:1.6rem;align-items:center;font-size:.82rem;letter-spacing:.06em;text-transform:uppercase}
+  .nav-links a{text-decoration:none;color:var(--wine-deep);opacity:.75}
+  .nav-links a:hover{opacity:1}
+  .btn{font-family:"DM Sans",sans-serif;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;font-weight:600;
+    background:var(--wine);color:#fff;border:0;padding:.7rem 1.2rem;border-radius:100px;cursor:pointer;text-decoration:none;display:inline-block;transition:transform .2s,background .2s}
+  .btn:hover{background:var(--wine-deep);transform:translateY(-1px)}
+  .btn.gold{background:var(--gold);color:var(--wine-deep)}
+  .btn.gold:hover{background:#b58a45}
+  @media(max-width:640px){.nav-links a.jump{display:none}}
+
+  /* ——— arch motif (the signature) ——— */
+  .arch{border-radius:50% 50% 0 0/ 62% 62% 0 0;overflow:hidden;position:relative}
+  .arch::after{content:"";position:absolute;inset:0;border:1px solid rgba(255,255,255,.35);border-radius:inherit;
+    box-shadow:inset 0 22px 40px -22px rgba(255,255,255,.7);pointer-events:none} /* gel sheen */
+  .arch-frame{padding:10px;background:linear-gradient(160deg,var(--gold),#e7cf9d 45%,var(--gold));border-radius:50% 50% 8px 8px/ 62% 62% 8px 8px}
+
+  /* ——— hero ——— */
+  header{padding:3.2rem 0 2rem;position:relative;overflow:hidden}
+  .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:2.4rem;align-items:center}
+  .hero-copy .eyebrow{margin-bottom:1rem}
+  .hero h1{font-size:clamp(3rem,9vw,5.6rem)}
+  .hero h1 em{color:var(--rose)}
+  .tagline{font-family:"Cormorant Garamond",serif;font-style:italic;font-size:1.5rem;color:var(--wine-deep);margin:.6rem 0 1.4rem}
+  .cross{color:var(--gold);font-style:normal}
+  .hero-cta{display:flex;gap:.9rem;flex-wrap:wrap;align-items:center}
+  .deposit-note{font-size:.82rem;color:var(--rose);max-width:22ch}
+  .hero-photo{width:min(360px,72vw);margin-inline:auto}
+  .hero-photo .arch{aspect-ratio:3/4}
+  .hero-photo img{width:100%;height:100%;object-fit:cover}
+  @media(max-width:760px){.hero{grid-template-columns:1fr;text-align:center}.hero-cta{justify-content:center}.deposit-note{margin-inline:auto}.hero-photo{order:-1}}
+
+  /* ——— trust band ——— */
+  .trust{display:flex;align-items:center;gap:1.4rem;justify-content:center;padding:1.6rem 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  .trust .arch{width:66px;flex:none;aspect-ratio:3/4}
+  .trust .arch img{width:100%;height:100%;object-fit:cover}
+  .trust-txt{max-width:34ch}
+  .trust-txt b{color:var(--wine);font-weight:600}
+  .trust-txt p{margin:.15rem 0 0;font-size:.9rem;color:var(--ink)}
+  @media(max-width:520px){.trust{flex-direction:column;text-align:center;gap:.8rem}}
+
+  /* ——— section shell ——— */
+  section{padding:3.4rem 0}
+  .sec-head{text-align:center;margin-bottom:2.2rem}
+  .sec-head h2{font-size:clamp(2.2rem,6vw,3.4rem)}
+  .sec-head p{color:var(--rose);margin:.4rem 0 0}
+
+  /* ——— services ——— */
+  .menu{display:grid;grid-template-columns:repeat(2,1fr);gap:1.6rem}
+  .svc{background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column;transition:transform .25s,box-shadow .25s}
+  .svc:hover{transform:translateY(-4px);box-shadow:0 18px 40px -26px rgba(61,22,38,.55)}
+  .svc-img{aspect-ratio:4/3;overflow:hidden;position:relative}
+  .svc-img img{width:100%;height:100%;object-fit:cover;transition:transform .6s}
+  .svc:hover .svc-img img{transform:scale(1.05)}
+  .svc-body{padding:1.1rem 1.3rem 1.4rem;display:flex;flex-direction:column;gap:.5rem;flex:1}
+  .svc-body h3{font-size:1.7rem}
+  .svc-row{display:flex;align-items:baseline;justify-content:space-between;gap:.5rem;margin-top:auto}
+  .price{font-family:"Cormorant Garamond",serif;font-size:1.5rem;color:var(--wine)}
+  .dur{font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--rose)}
+  .dep{display:inline-block;font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);border:1px solid var(--gold);border-radius:100px;padding:.2rem .6rem;width:max-content}
+  .svc .btn{margin-top:.7rem;text-align:center}
+  @media(max-width:640px){.menu{grid-template-columns:1fr}}
+  .svc .price .from{font-family:"DM Sans",sans-serif;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--rose);font-weight:600;margin-right:.25rem;vertical-align:middle}
+
+  /* ——— full price list ——— */
+  .pricelist{margin-top:2.6rem;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:2rem clamp(1.4rem,4vw,2.8rem)}
+  .pl-title{text-align:center;font-size:2rem;margin-bottom:1.6rem}
+  .pl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.4rem 2.8rem}
+  .pl-col h4{font-family:"DM Sans",sans-serif;font-size:.7rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin:1.2rem 0 .5rem;font-weight:600}
+  .pl-col h4:first-child{margin-top:0}
+  .pl-col ul{list-style:none;margin:0;padding:0}
+  .pl-col li{display:flex;align-items:baseline;gap:.5rem;padding:.2rem 0}
+  .pl-col li .name{font-size:.95rem;color:var(--ink)}
+  .pl-col li .lead{flex:1;border-bottom:1px dotted var(--line);transform:translateY(-4px)}
+  .pl-col li .amt{font-family:"Cormorant Garamond",serif;font-size:1.2rem;color:var(--wine);font-weight:600;white-space:nowrap}
+  .pl-note{font-size:.78rem;color:var(--rose);font-style:italic;margin:.35rem 0 0}
+  @media(max-width:760px){.pl-grid{grid-template-columns:1fr}}
+
+  /* ——— gallery ——— */
+  .gallery{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem}
+  .gallery .arch{aspect-ratio:3/4;cursor:zoom-in}
+  .gallery img{width:100%;height:100%;object-fit:cover;transition:transform .5s,filter .5s}
+  .gallery .arch:hover img{transform:scale(1.06)}
+  @media(max-width:860px){.gallery{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:520px){.gallery{grid-template-columns:repeat(2,1fr)}}
+
+  /* ——— policies ——— */
+  .policies{background:var(--wine);color:#f3e4dd;border-radius:20px;padding:2.6rem clamp(1.4rem,5vw,3rem)}
+  .policies h2{color:#fff}
+  .policies .sec-head p{color:var(--blush);opacity:.8}
+  .pol-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.6rem;margin-top:1.6rem}
+  .pol h3{color:var(--gold);font-size:1.4rem;margin-bottom:.3rem}
+  .pol p{font-size:.92rem;color:#e9d9d2;margin:0}
+  @media(max-width:680px){.pol-grid{grid-template-columns:1fr}}
+
+  /* ——— footer ——— */
+  footer{text-align:center;padding:3rem 0 6rem}
+  footer .brand{font-size:2rem;display:block;margin-bottom:.4rem}
+  footer a.ig{color:var(--wine);text-decoration:none;font-weight:600;letter-spacing:.04em}
+  footer .fine{font-size:.78rem;color:var(--rose);margin-top:1rem}
+
+  /* ——— sticky mobile book bar ——— */
+  .book-bar{position:fixed;left:0;right:0;bottom:0;z-index:45;display:none;padding:.7rem 5vw;background:rgba(61,22,38,.94);backdrop-filter:blur(6px)}
+  .book-bar .btn{width:100%;text-align:center;background:var(--gold);color:var(--wine-deep)}
+  @media(max-width:760px){.book-bar{display:block}footer{padding-bottom:6.5rem}}
+
+  /* ——— modal (GHL booking widget) ——— */
+  .modal{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;padding:4vw;background:rgba(45,16,28,.55);backdrop-filter:blur(4px)}
+  .modal.open{display:flex}
+  .modal-card{background:var(--paper);border-radius:18px;width:min(560px,100%);max-height:92vh;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 30px 80px -30px rgba(0,0,0,.6)}
+  .modal-top{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.3rem;border-bottom:1px solid var(--line)}
+  .modal-top h3{font-size:1.5rem}
+  .modal-close{background:none;border:0;font-size:1.5rem;color:var(--wine);cursor:pointer;line-height:1}
+  .modal-body{overflow:auto}
+  .modal-body iframe{width:100%;height:70vh;border:0;display:block}
+  .ghl-placeholder{padding:2.4rem 1.6rem;text-align:center;color:var(--rose)}
+  .ghl-placeholder code{background:var(--blush);padding:.15rem .4rem;border-radius:5px;color:var(--wine-deep);font-size:.85em}
+
+  /* ——— lightbox ——— */
+  .lightbox{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:5vw;background:rgba(45,16,28,.9);cursor:zoom-out}
+  .lightbox.open{display:flex}
+  .lightbox img{max-width:100%;max-height:90vh;border-radius:12px}
+
+  /* ——— reveal ——— */
+  .reveal{opacity:0;transform:translateY(22px);transition:opacity .7s ease,transform .7s ease}
+  .reveal.in{opacity:1;transform:none}
+  @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}.reveal{opacity:1;transform:none;transition:none}.svc,.svc-img img,.gallery img{transition:none}}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap nav-in">
+    <span class="brand">Nailed by <b>Mari</b></span>
+    <div class="nav-links">
+      <a class="jump" href="#menu">Menu</a>
+      <a class="jump" href="#work">Work</a>
+      <a class="jump" href="#policies">Policies</a>
+      <a class="btn" href="#" data-book>Book</a>
+    </div>
+  </div>
+</nav>
+
+<header>
+  <div class="wrap hero">
+    <div class="hero-copy reveal">
+      <div class="eyebrow">Cleveland, OH · Licensed Nail Technician</div>
+      <h1>Nailed <em>by</em> Mari</h1>
+      <p class="tagline">Faith <span class="cross">·</span> Nails <span class="cross">·</span> Peace <span class="cross">✝︎</span></p>
+      <div class="hero-cta">
+        <a class="btn gold" href="#" data-book>Book your appointment</a>
+        <p class="deposit-note">A small deposit holds your slot &amp; goes toward your service.</p>
+      </div>
+    </div>
+    <div class="hero-photo reveal">
+      <div class="arch-frame"><div class="arch"><img src="assets/profile_pic.jpg" alt="Mari, nail technician"></div></div>
+    </div>
+  </div>
+</header>
+
+<!-- ——— TRUST BAND ——— -->
+<div class="wrap">
+  <div class="trust reveal">
+    <div class="arch"><img src="assets/posts/post_01_C46E3Z7pJfx.jpg" alt="Mari, licensed nail technician"></div>
+    <div class="trust-txt"><b>Licensed &amp; Cleveland-based</b><p>Certified by the Ohio State Cosmetology &amp; Barber Board — your set is in trained, insured hands.</p></div>
+  </div>
+</div>
+
+<!-- ——— SERVICES ——— -->
+<section id="menu">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>The Menu</h2><p>Every set finished with care — book the look you want.</p></div>
+    <div class="menu">
+      <!-- data-service is passed to the GHL widget so it opens the right appointment type -->
+      <article class="svc reveal" data-service="Acrylic Full Set">
+        <div class="svc-img"><img src="assets/posts/post_02_DaQjDXVFORV.jpg" alt="Acrylic full set"></div>
+        <div class="svc-body">
+          <h3>Acrylic Full Set</h3>
+          <span class="dep">Deposit required</span>
+          <div class="svc-row"><span class="price"><span class="from">from</span>$50</span><span class="dur">Short → XL</span></div>
+          <a class="btn" href="#" data-book data-service="Acrylic Full Set">Book this</a>
+        </div>
+      </article>
+      <article class="svc reveal" data-service="Gel-X Full Set">
+        <div class="svc-img"><img src="assets/posts/post_04_DZGUm-olLPE.jpg" alt="Gel-X full set"></div>
+        <div class="svc-body">
+          <h3>Gel-X Full Set</h3>
+          <span class="dep">Deposit required</span>
+          <div class="svc-row"><span class="price"><span class="from">from</span>$45</span><span class="dur">Short → XL</span></div>
+          <a class="btn" href="#" data-book data-service="Gel-X Full Set">Book this</a>
+        </div>
+      </article>
+      <article class="svc reveal" data-service="Builder Gel Overlay">
+        <div class="svc-img"><img src="assets/posts/post_08_DWZkh8zFNca.jpg" alt="Builder gel overlay"></div>
+        <div class="svc-body">
+          <h3>Builder Gel</h3>
+          <span class="dep">Deposit required</span>
+          <div class="svc-row"><span class="price"><span class="from">from</span>$45</span><span class="dur">Overlay</span></div>
+          <a class="btn" href="#" data-book data-service="Builder Gel">Book this</a>
+        </div>
+      </article>
+      <!-- TODO: no mani/pedi photo in her feed — swap for a real mani/pedi shot from Mari -->
+      <article class="svc reveal" data-service="Mani & Pedi">
+        <div class="svc-img"><img src="assets/posts/post_09_DV1Ar5bjbG5.jpg" alt="Mani and pedi"></div>
+        <div class="svc-body">
+          <h3>Mani &amp; Pedi</h3>
+          <span class="dep">Deposit required</span>
+          <div class="svc-row"><span class="price"><span class="from">from</span>$25</span><span class="dur">Toes &amp; hands</span></div>
+          <a class="btn" href="#" data-book data-service="Mani & Pedi">Book this</a>
+        </div>
+      </article>
+    </div>
+
+    <!-- ——— FULL PRICE LIST ——— -->
+    <div class="pricelist reveal">
+      <h3 class="pl-title">Full Price List</h3>
+      <div class="pl-grid">
+        <div class="pl-col">
+          <h4>Acrylic — Full Set</h4>
+          <ul>
+            <li><span class="name">Short</span><span class="lead"></span><span class="amt">$50</span></li>
+            <li><span class="name">Medium</span><span class="lead"></span><span class="amt">$60</span></li>
+            <li><span class="name">Long</span><span class="lead"></span><span class="amt">$70</span></li>
+            <li><span class="name">XL</span><span class="lead"></span><span class="amt">$80+</span></li>
+          </ul>
+          <h4>Acrylic — Fill</h4>
+          <ul>
+            <li><span class="name">Short</span><span class="lead"></span><span class="amt">$45</span></li>
+            <li><span class="name">Medium</span><span class="lead"></span><span class="amt">$55</span></li>
+            <li><span class="name">Long</span><span class="lead"></span><span class="amt">$65</span></li>
+            <li><span class="name">XL</span><span class="lead"></span><span class="amt">$75+</span></li>
+          </ul>
+          <p class="pl-note">Soak-off after 3rd fill.</p>
+        </div>
+        <div class="pl-col">
+          <h4>Gel-X</h4>
+          <ul>
+            <li><span class="name">Short</span><span class="lead"></span><span class="amt">$45</span></li>
+            <li><span class="name">Medium</span><span class="lead"></span><span class="amt">$55</span></li>
+            <li><span class="name">Long</span><span class="lead"></span><span class="amt">$65</span></li>
+            <li><span class="name">XL</span><span class="lead"></span><span class="amt">$75+</span></li>
+          </ul>
+          <p class="pl-note">Soak-off after every set.</p>
+          <h4>Builder Gel</h4>
+          <ul>
+            <li><span class="name">Overlay</span><span class="lead"></span><span class="amt">from $45</span></li>
+          </ul>
+        </div>
+        <div class="pl-col">
+          <h4>Mani &amp; Pedi</h4>
+          <ul>
+            <li><span class="name">Gel Mani</span><span class="lead"></span><span class="amt">$25</span></li>
+            <li><span class="name">Gel Pedi</span><span class="lead"></span><span class="amt">$35</span></li>
+            <li><span class="name">Acrylic Big Toe</span><span class="lead"></span><span class="amt">$40</span></li>
+            <li><span class="name">Acrylic Toes (full set)</span><span class="lead"></span><span class="amt">$45</span></li>
+          </ul>
+          <h4>Add-ons</h4>
+          <ul>
+            <li><span class="name">Soak off</span><span class="lead"></span><span class="amt">$10</span></li>
+            <li><span class="name">Foreign soak off</span><span class="lead"></span><span class="amt">$15</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— GALLERY ——— -->
+<section id="work">
+  <div class="wrap">
+    <div class="sec-head reveal"><h2>The Work</h2><p>Recent sets from the chair.</p></div>
+    <div class="gallery">
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_02_DaQjDXVFORV.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_03_DZYdTRnDUyi.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_05_DYQaVAhjVaX.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_06_DXiPfMpDYjA.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_07_DWe8KP3FJ4e.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_08_DWZkh8zFNca.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_10_DVrHrI5kQ-b.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_11_DUbnSGaEowI.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_12_DUOgW6yEW7R.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_04_DZGUm-olLPE.jpg" alt="Nail set"></div>
+      <div class="arch reveal"><img loading="lazy" src="assets/posts/post_09_DV1Ar5bjbG5.jpg" alt="Nail set"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ——— POLICIES ——— -->
+<section id="policies">
+  <div class="wrap">
+    <div class="policies reveal">
+      <div class="sec-head"><h2>Booking &amp; Policies</h2><p>So every appointment runs smooth.</p></div>
+      <div class="pol-grid">
+        <div class="pol"><h3>Deposits</h3><p>A deposit holds your appointment and applies to your total. <em>[NEEDS MARI — amount &amp; rule]</em></p></div>
+        <div class="pol"><h3>Rescheduling</h3><p>Need to move? Let me know ahead of time to keep your deposit. <em>[NEEDS MARI — window]</em></p></div>
+        <div class="pol"><h3>No-shows</h3><p>No-shows and late cancels forfeit the deposit. <em>[NEEDS MARI — confirm]</em></p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span class="brand">Nailed by <b>Mari</b></span>
+    <div><a class="ig" href="https://www.instagram.com/nailedbymariii" target="_blank" rel="noopener">@nailedbymariii</a> · Cleveland, OH</div>
+    <a class="btn gold" href="#" data-book style="margin-top:1.2rem">Book your appointment</a>
+    <p class="fine">Faith · Nails · Peace ✝︎</p>
+  </div>
+</footer>
+
+<div class="book-bar"><a class="btn" href="#" data-book>Book your appointment</a></div>
+
+<!-- ——— BOOKING MODAL (GHL widget goes here) ——— -->
+<div class="modal" id="bookModal" aria-hidden="true">
+  <div class="modal-card">
+    <div class="modal-top"><h3 id="modalTitle">Book your appointment</h3><button class="modal-close" data-close aria-label="Close">×</button></div>
+    <div class="modal-body">
+      <!--
+        REPLACE the placeholder below with the GHL calendar embed once the calendar exists:
+        <iframe src="https://api.leadconnectorhq.com/widget/booking/CALENDAR_ID" scrolling="no" id="ghlWidget"></iframe>
+        <script src="https://link.msgsndr.com/js/form_embed.js"></script>
+        The JS below appends ?service=... so the right appointment type preselects.
+      -->
+      <div class="ghl-placeholder" id="ghlSlot">
+        <p><strong>Booking widget loads here.</strong></p>
+        <p>Paste Mari's GHL calendar embed into <code>#ghlSlot</code> (see comment in the source &amp; GHL-EMBED.md).</p>
+        <p id="pickedService" style="color:var(--wine-deep)"></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ——— LIGHTBOX ——— -->
+<div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
+
+<script>
+  // Config: set this once the GHL calendar exists.
+  const GHL_WIDGET_BASE = ""; // e.g. "https://api.leadconnectorhq.com/widget/booking/XXXXXXXX"
+
+  const modal = document.getElementById('bookModal');
+  const slot  = document.getElementById('ghlSlot');
+  const title = document.getElementById('modalTitle');
+  const picked= document.getElementById('pickedService');
+
+  function openBooking(service){
+    if(service){ title.textContent = 'Book — ' + service; picked.textContent = 'Selected: ' + service; }
+    else { title.textContent = 'Book your appointment'; picked.textContent = ''; }
+    if(GHL_WIDGET_BASE){
+      const src = GHL_WIDGET_BASE + (service ? ('?service=' + encodeURIComponent(service)) : '');
+      slot.innerHTML = '<iframe src="'+src+'" scrolling="no"></iframe>';
+    }
+    modal.classList.add('open'); modal.setAttribute('aria-hidden','false');
+    document.body.style.overflow='hidden';
+  }
+  function closeBooking(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+
+  document.querySelectorAll('[data-book]').forEach(el=>el.addEventListener('click',e=>{
+    e.preventDefault(); openBooking(el.getAttribute('data-service'));
+  }));
+  document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeBooking));
+  modal.addEventListener('click',e=>{ if(e.target===modal) closeBooking(); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ closeBooking(); closeLightbox(); } });
+
+  // Lightbox
+  const lb=document.getElementById('lightbox'), lbImg=document.getElementById('lightboxImg');
+  document.querySelectorAll('.gallery .arch img').forEach(img=>img.addEventListener('click',()=>{
+    lbImg.src=img.src; lb.classList.add('open'); document.body.style.overflow='hidden';
+  }));
+  function closeLightbox(){ lb.classList.remove('open'); document.body.style.overflow=''; }
+  lb.addEventListener('click',closeLightbox);
+
+  // Scroll reveal
+  const io=new IntersectionObserver((es)=>es.forEach(en=>{ if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);} }),{threshold:.12});
+  document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+</script>
+</body>
+</html>
