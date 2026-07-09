@@ -395,7 +395,7 @@
 <div class="lightbox" id="lightbox"><img id="lightboxImg" src="" alt=""></div>
 
 <script>
-  const GHL_WIDGET_BASE = ""; // e.g. "https://api.leadconnectorhq.com/widget/booking/XXXXXXXX"
+  const GHL_WIDGET_BASE = "https://api.leadconnectorhq.com/widget/booking/XC6BoVnM8Hzyq8bPdUR4";
   const modal=document.getElementById('bookModal'), slot=document.getElementById('ghlSlot'),
         title=document.getElementById('modalTitle'), picked=document.getElementById('pickedService');
   function openBooking(service){
@@ -415,6 +415,8 @@
   lb.addEventListener('click',closeLightbox);
   const io=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}}),{threshold:.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+  // GHL widget auto-resize
+  (function(){var s=document.createElement('script');s.src='https://link.msgsndr.com/js/form_embed.js';s.async=true;document.body.appendChild(s);})();
   // staggered cascade for grid items (row-wise)
   ['.menu .svc','.gallery .tile'].forEach(sel=>document.querySelectorAll(sel).forEach((el,i)=>{el.style.transitionDelay=((i%4)*0.07)+'s';}));
   // scroll progress bar
