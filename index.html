@@ -176,6 +176,34 @@
   .ghl-placeholder{padding:2.4rem 1.6rem;text-align:center;color:var(--ink)}
   .ghl-placeholder code{background:var(--pink-deep);padding:.15rem .4rem;border-radius:4px;color:var(--black);font-size:.85em}
 
+  /* ——— booking wizard ——— */
+  .wiz{padding:1.3rem 1.4rem 1.6rem}
+  .wiz h4{font-family:"Cormorant Garamond",serif;font-size:1.6rem;color:var(--black);margin:0 0 .15rem}
+  .wiz .sub{font-size:.85rem;color:var(--ink);opacity:.62;margin:0 0 1.1rem}
+  .step{display:none}
+  .step.active{display:block;animation:stepin .35s ease}
+  @keyframes stepin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+  .choices{display:grid;gap:.7rem}
+  .choice{display:flex;flex-direction:column;align-items:flex-start;gap:.15rem;text-align:left;background:var(--pink-soft);border:1px solid var(--line);border-radius:8px;padding:.95rem 1.1rem;cursor:pointer;font-family:"DM Sans",sans-serif;font-size:1.05rem;color:var(--black);transition:border-color .2s,background .2s}
+  .choice:hover,.choice.sel{border-color:var(--gold);background:#fff}
+  .choice .c-sub{font-size:.76rem;color:var(--ink);opacity:.6}
+  .field{margin:0 0 1rem}
+  .field>label{display:block;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);font-weight:600;margin-bottom:.4rem}
+  .field select,.field input,.field textarea{width:100%;font-family:"DM Sans",sans-serif;font-size:.95rem;color:var(--ink);background:#fff;border:1px solid var(--line);border-radius:6px;padding:.62rem .7rem}
+  .field textarea{min-height:78px;resize:vertical}
+  .chips{display:flex;flex-wrap:wrap;gap:.5rem}
+  .chip{font-size:.85rem;border:1px solid var(--line);background:#fff;border-radius:100px;padding:.42rem .85rem;cursor:pointer;color:var(--ink);user-select:none}
+  .chip.sel{border-color:var(--gold);background:var(--gold);color:var(--black);font-weight:600}
+  .pickblock{border:1px solid var(--line);border-radius:8px;padding:1rem;margin-bottom:1rem;background:var(--pink-soft)}
+  .pickblock h5{margin:0 0 .7rem;font-family:"DM Sans",sans-serif;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--black)}
+  .pickblock .field:last-child{margin-bottom:0}
+  .wiz-nav{display:flex;justify-content:space-between;gap:.7rem;margin-top:1.1rem}
+  .wiz-nav .btn{flex:1;text-align:center}
+  .summary{background:var(--black);color:#f3e4ea;border-radius:8px;padding:.95rem 1.1rem;margin-bottom:1rem;font-size:.9rem;line-height:1.5}
+  .summary b{color:var(--gold-lt);font-weight:600}
+  .summary .est{color:var(--gold-lt);font-family:"Cormorant Garamond",serif;font-size:1.15rem}
+  #ghlSlot iframe{width:100%;height:66vh;border:0;display:block}
+
   /* ——— lightbox ——— */
   .lightbox{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:5vw;background:rgba(19,16,19,.92);cursor:zoom-out}
   .lightbox.open{display:flex}
@@ -372,21 +400,53 @@
 
 <div class="book-bar"><a class="btn gold" href="#" data-book>Book your appointment</a></div>
 
-<!-- ——— BOOKING MODAL (GHL widget goes here) ——— -->
+<!-- ——— BOOKING WIZARD ——— -->
 <div class="modal" id="bookModal" aria-hidden="true">
   <div class="modal-card">
     <div class="modal-top"><h3 id="modalTitle">Book your appointment</h3><button class="modal-close" data-close aria-label="Close">×</button></div>
     <div class="modal-body">
-      <!--
-        REPLACE the placeholder below with the GHL calendar embed once the calendar exists:
-        <iframe src="https://api.leadconnectorhq.com/widget/booking/CALENDAR_ID" scrolling="no" id="ghlWidget"></iframe>
-        <script src="https://link.msgsndr.com/js/form_embed.js"></script>
-        The JS below appends ?service=... so the right appointment type preselects.
-      -->
-      <div class="ghl-placeholder" id="ghlSlot">
-        <p><strong>Booking widget loads here.</strong></p>
-        <p>Paste Mari's GHL calendar embed into <code>#ghlSlot</code> (see GHL-EMBED.md).</p>
-        <p id="pickedService" style="color:var(--black)"></p>
+      <div class="wiz">
+        <!-- Step 1 — type -->
+        <div class="step active" data-step="1">
+          <h4>What are we booking?</h4>
+          <p class="sub">Hands, feet, or both — your call.</p>
+          <div class="choices">
+            <button class="choice" data-type="Hands only">Just my hands<span class="c-sub">Acrylic · Gel-X · Builder Gel · Gel Mani</span></button>
+            <button class="choice" data-type="Feet only">Just my feet<span class="c-sub">Gel Pedi · Acrylic toes</span></button>
+            <button class="choice" data-type="Hands + Feet">Hands + Feet<span class="c-sub">Book both in one visit</span></button>
+          </div>
+        </div>
+        <!-- Step 2 — services -->
+        <div class="step" data-step="2">
+          <h4>Pick your services</h4>
+          <p class="sub">Choose what you'd like done.</p>
+          <div class="pickblock" id="handsBlock">
+            <h5>Hands</h5>
+            <div class="field"><label>Service</label><select id="handsService"></select></div>
+            <div class="field" id="handsLenField"><label>Length</label><select id="handsLength"></select></div>
+          </div>
+          <div class="pickblock" id="feetBlock">
+            <h5>Feet</h5>
+            <div class="field"><label>Service</label><select id="feetService"></select></div>
+          </div>
+          <div class="field"><label>Add-ons (optional)</label><div class="chips" id="addonChips"></div></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn" data-next="3">Next</button></div>
+        </div>
+        <!-- Step 3 — details -->
+        <div class="step" data-step="3">
+          <h4>The details</h4>
+          <p class="sub">Help Mari prep for your set.</p>
+          <div class="field"><label>Design / inspo notes</label><textarea id="fNotes" placeholder="Colors, shape, any inspo pics you'll bring…"></textarea></div>
+          <div class="field"><label>Allergies / sensitivities</label><input id="fAllergies" placeholder="Optional"></div>
+          <div class="field"><label>Been to Mari before?</label><div class="chips" id="returningChips"><span class="chip" data-ret="Yes">Yes</span><span class="chip" data-ret="No">First time</span></div></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="4">Continue to booking</button></div>
+        </div>
+        <!-- Step 4 — booking -->
+        <div class="step" data-step="4">
+          <div class="summary" id="summary"></div>
+          <div id="ghlSlot"></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back to details</button></div>
+        </div>
       </div>
     </div>
   </div>
@@ -396,15 +456,80 @@
 
 <script>
   const GHL_WIDGET_BASE = "https://api.leadconnectorhq.com/widget/booking/XC6BoVnM8Hzyq8bPdUR4";
-  const modal=document.getElementById('bookModal'), slot=document.getElementById('ghlSlot'),
-        title=document.getElementById('modalTitle'), picked=document.getElementById('pickedService');
+  const HANDS={"Acrylic Full Set":{Short:50,Medium:60,Long:70,XL:80},"Acrylic Fill":{Short:45,Medium:55,Long:65,XL:75},"Gel-X Full Set":{Short:45,Medium:55,Long:65,XL:75},"Builder Gel":{flat:45},"Gel Mani":{flat:25}};
+  const FEET={"Gel Pedi":35,"Acrylic Big Toe":40,"Acrylic Toes (full set)":45};
+  const ADDONS={"Soak off":10,"Foreign soak off":15};
+  const LENGTHS=["Short","Medium","Long","XL"];
+  const state={type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,pendingHands:null};
+  const modal=document.getElementById('bookModal'), slot=document.getElementById('ghlSlot'), title=document.getElementById('modalTitle');
+  const $=(s)=>document.querySelector(s);
+  const hs=$('#handsService'); hs.innerHTML=Object.keys(HANDS).map(n=>`<option>${n}</option>`).join('');
+  const fs=$('#feetService'); fs.innerHTML=Object.keys(FEET).map(n=>`<option>${n}</option>`).join('');
+  const hl=$('#handsLength'); hl.innerHTML=LENGTHS.map(n=>`<option>${n}</option>`).join('');
+  $('#addonChips').innerHTML=Object.keys(ADDONS).map(n=>`<span class="chip" data-addon="${n}">${n} +$${ADDONS[n]}</span>`).join('');
+
+  function showStep(n){document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',+s.dataset.step===n)); const b=modal.querySelector('.modal-body'); if(b)b.scrollTop=0;}
+  function hasLength(){return HANDS[hs.value] && HANDS[hs.value].flat==null;}
+  function syncLen(){$('#handsLenField').style.display=hasLength()?'block':'none';}
+
   function openBooking(service){
-    if(service){ title.textContent='Book — '+service; picked.textContent='Selected: '+service; }
-    else { title.textContent='Book your appointment'; picked.textContent=''; }
-    if(GHL_WIDGET_BASE){ slot.innerHTML='<iframe src="'+GHL_WIDGET_BASE+(service?('?service='+encodeURIComponent(service)):'')+'" scrolling="no"></iframe>'; }
+    Object.assign(state,{type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,pendingHands:(service&&HANDS[service])?service:null});
+    document.querySelectorAll('.choice,.chip').forEach(c=>c.classList.remove('sel'));
+    $('#fNotes').value=''; $('#fAllergies').value='';
+    title.textContent='Book your appointment';
+    showStep(1);
     modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
   }
-  function closeBooking(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; }
+  function closeBooking(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; slot.innerHTML=''; }
+
+  document.querySelectorAll('.choice').forEach(c=>c.addEventListener('click',()=>{
+    document.querySelectorAll('.choice').forEach(x=>x.classList.remove('sel'));
+    c.classList.add('sel'); state.type=c.dataset.type;
+    const hands=state.type!=='Feet only', feet=state.type!=='Hands only';
+    $('#handsBlock').style.display=hands?'block':'none';
+    $('#feetBlock').style.display=feet?'block':'none';
+    if(hands && state.pendingHands) hs.value=state.pendingHands;
+    syncLen();
+    setTimeout(()=>showStep(2),110);
+  }));
+  hs.addEventListener('change',syncLen);
+  document.querySelectorAll('#addonChips .chip').forEach(ch=>ch.addEventListener('click',()=>ch.classList.toggle('sel')));
+  document.querySelectorAll('#returningChips .chip').forEach(ch=>ch.addEventListener('click',()=>{document.querySelectorAll('#returningChips .chip').forEach(x=>x.classList.remove('sel'));ch.classList.add('sel');state.returning=ch.dataset.ret;}));
+
+  function collect(){
+    const hands=state.type!=='Feet only', feet=state.type!=='Hands only';
+    state.handsService=hands?hs.value:null;
+    state.handsLength=(hands&&hasLength())?hl.value:null;
+    state.feetService=feet?fs.value:null;
+    state.addons=[...document.querySelectorAll('#addonChips .chip.sel')].map(c=>c.dataset.addon);
+    state.notes=$('#fNotes').value.trim(); state.allergies=$('#fAllergies').value.trim();
+  }
+  function estimate(){let t=0;
+    if(state.handsService){const h=HANDS[state.handsService]; t+=h.flat!=null?h.flat:(h[state.handsLength]||h.Short);}
+    if(state.feetService)t+=FEET[state.feetService]||0;
+    state.addons.forEach(a=>t+=ADDONS[a]||0); return t;}
+  function summaryHTML(){
+    const bits=[];
+    if(state.handsService)bits.push(`<b>Hands:</b> ${state.handsService}${state.handsLength?' · '+state.handsLength:''}`);
+    if(state.feetService)bits.push(`<b>Feet:</b> ${state.feetService}`);
+    if(state.addons.length)bits.push(`<b>Add-ons:</b> ${state.addons.join(', ')}`);
+    return bits.join('<br>')+`<br><span class="est">Est. $${estimate()}</span> <span style="opacity:.7">· + deposit to hold your seat</span>`;
+  }
+  function prefillURL(){
+    const p=new URLSearchParams(); const set=(k,v)=>{if(v)p.set(k,v)};
+    set('booking_type',state.type); set('hands_service',state.handsService); set('hands_length',state.handsLength);
+    set('feet_service',state.feetService); set('addons',state.addons.join(', '));
+    set('design__inspo_notes',state.notes); set('allergies__sensitivities',state.allergies); set('returning_client',state.returning);
+    return GHL_WIDGET_BASE+'?'+p.toString();
+  }
+  document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
+    const to=+b.dataset.next;
+    if(to===3) collect();
+    if(to===4){ collect(); $('#summary').innerHTML=summaryHTML(); slot.innerHTML='<iframe src="'+prefillURL()+'" scrolling="no"></iframe>'; }
+    showStep(to);
+  }));
+  document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{ const cur=+b.closest('.step').dataset.step; showStep(Math.max(1,cur-1)); }));
+
   document.querySelectorAll('[data-book]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();openBooking(el.getAttribute('data-service'));}));
   document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeBooking));
   modal.addEventListener('click',e=>{if(e.target===modal)closeBooking();});
