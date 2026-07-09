@@ -203,6 +203,15 @@
   .summary b{color:var(--gold-lt);font-weight:600}
   .summary .est{color:var(--gold-lt);font-family:"Cormorant Garamond",serif;font-size:1.15rem}
   #ghlSlot iframe{width:100%;height:66vh;border:0;display:block}
+  .uploader{display:inline-block;cursor:pointer;border:1px dashed var(--gold);color:var(--black);background:#fff;border-radius:6px;padding:.6rem .9rem;font-size:.85rem;transition:background .2s}
+  .uploader:hover{background:var(--pink-soft)}
+  .thumbs{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.6rem}
+  .thumbs .th{position:relative;width:56px;height:56px;border-radius:6px;overflow:hidden;border:1px solid var(--line)}
+  .thumbs .th img{width:100%;height:100%;object-fit:cover}
+  .thumbs .th button{position:absolute;top:1px;right:1px;background:rgba(0,0,0,.62);color:#fff;border:0;border-radius:50%;width:17px;height:17px;font-size:11px;line-height:1;cursor:pointer;padding:0}
+  .field.two{display:flex;gap:.7rem}.field.two>div{flex:1}
+  .wiz .err{color:#a3324e;font-size:.8rem;margin:.3rem 0 0;display:none}
+  .wiz .err.show{display:block}
 
   /* ——— lightbox ——— */
   .lightbox{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:5vw;background:rgba(19,16,19,.92);cursor:zoom-out}
@@ -435,10 +444,19 @@
         <!-- Step 3 — details -->
         <div class="step" data-step="3">
           <h4>The details</h4>
-          <p class="sub">Help Mari prep for your set.</p>
-          <div class="field"><label>Design / inspo notes</label><textarea id="fNotes" placeholder="Colors, shape, any inspo pics you'll bring…"></textarea></div>
+          <p class="sub">Help Mari prep — then pick your time.</p>
+          <div class="field"><label>Design / inspo notes</label><textarea id="fNotes" placeholder="Colors, shape, vibe…"></textarea></div>
+          <div class="field"><label>Inspo photos (optional)</label>
+            <label class="uploader" for="fPhotos">＋ Add reference photos</label>
+            <input id="fPhotos" type="file" accept="image/*" multiple hidden>
+            <div class="thumbs" id="thumbs"></div>
+          </div>
           <div class="field"><label>Allergies / sensitivities</label><input id="fAllergies" placeholder="Optional"></div>
           <div class="field"><label>Been to Mari before?</label><div class="chips" id="returningChips"><span class="chip" data-ret="Yes">Yes</span><span class="chip" data-ret="No">First time</span></div></div>
+          <div class="field two"><div><label>First name</label><input id="fFirst"></div><div><label>Last name</label><input id="fLast"></div></div>
+          <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="you@email.com"></div>
+          <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(216) 000-0000"></div>
+          <p class="err" id="fErr">Please add your first name and email so Mari can confirm.</p>
           <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="4">Continue to booking</button></div>
         </div>
         <!-- Step 4 — booking -->
@@ -460,7 +478,9 @@
   const FEET={"Gel Pedi":35,"Acrylic Big Toe":40,"Acrylic Toes (full set)":45};
   const ADDONS={"Soak off":10,"Foreign soak off":15};
   const LENGTHS=["Short","Medium","Long","XL"];
-  const state={type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,pendingHands:null};
+  const INTAKE_ENDPOINT="https://codedbycb-platform.vercel.app/api/booking/mari-intake";
+  const state={type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",pendingHands:null};
+  let photoFiles=[];
   const modal=document.getElementById('bookModal'), slot=document.getElementById('ghlSlot'), title=document.getElementById('modalTitle');
   const $=(s)=>document.querySelector(s);
   const hs=$('#handsService'); hs.innerHTML=Object.keys(HANDS).map(n=>`<option>${n}</option>`).join('');
@@ -473,9 +493,10 @@
   function syncLen(){$('#handsLenField').style.display=hasLength()?'block':'none';}
 
   function openBooking(service){
-    Object.assign(state,{type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,pendingHands:(service&&HANDS[service])?service:null});
+    Object.assign(state,{type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",pendingHands:(service&&HANDS[service])?service:null});
     document.querySelectorAll('.choice,.chip').forEach(c=>c.classList.remove('sel'));
-    $('#fNotes').value=''; $('#fAllergies').value='';
+    ['#fNotes','#fAllergies','#fFirst','#fLast','#fEmail','#fPhone'].forEach(s=>{const el=$(s);if(el)el.value='';});
+    photoFiles=[]; renderThumbs(); $('#fErr').classList.remove('show');
     title.textContent='Book your appointment';
     showStep(1);
     modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
@@ -495,6 +516,10 @@
   hs.addEventListener('change',syncLen);
   document.querySelectorAll('#addonChips .chip').forEach(ch=>ch.addEventListener('click',()=>ch.classList.toggle('sel')));
   document.querySelectorAll('#returningChips .chip').forEach(ch=>ch.addEventListener('click',()=>{document.querySelectorAll('#returningChips .chip').forEach(x=>x.classList.remove('sel'));ch.classList.add('sel');state.returning=ch.dataset.ret;}));
+  // photo upload
+  function renderThumbs(){$('#thumbs').innerHTML=photoFiles.map((f,i)=>`<div class="th"><img src="${URL.createObjectURL(f)}"><button data-rm="${i}" aria-label="Remove">×</button></div>`).join('');
+    document.querySelectorAll('#thumbs [data-rm]').forEach(b=>b.addEventListener('click',()=>{photoFiles.splice(+b.dataset.rm,1);renderThumbs();}));}
+  $('#fPhotos').addEventListener('change',e=>{photoFiles=photoFiles.concat([...e.target.files].filter(f=>f.type.startsWith('image/'))).slice(0,8);renderThumbs();e.target.value='';});
 
   function collect(){
     const hands=state.type!=='Feet only', feet=state.type!=='Hands only';
@@ -503,6 +528,17 @@
     state.feetService=feet?fs.value:null;
     state.addons=[...document.querySelectorAll('#addonChips .chip.sel')].map(c=>c.dataset.addon);
     state.notes=$('#fNotes').value.trim(); state.allergies=$('#fAllergies').value.trim();
+    state.first=$('#fFirst').value.trim(); state.last=$('#fLast').value.trim();
+    state.email=$('#fEmail').value.trim(); state.phone=$('#fPhone').value.trim();
+  }
+  function submitIntake(){
+    const fd=new FormData();
+    fd.append('firstName',state.first); fd.append('lastName',state.last); fd.append('email',state.email); fd.append('phone',state.phone);
+    fd.append('booking_type',state.type||''); fd.append('hands_service',state.handsService||''); fd.append('hands_length',state.handsLength||'');
+    fd.append('feet_service',state.feetService||''); fd.append('addons',state.addons.join(', '));
+    fd.append('notes',state.notes); fd.append('allergies',state.allergies); fd.append('returning',state.returning||'');
+    photoFiles.forEach(f=>fd.append('photos',f));
+    fetch(INTAKE_ENDPOINT,{method:'POST',body:fd}).catch(()=>{}); // non-blocking; booking proceeds regardless
   }
   function estimate(){let t=0;
     if(state.handsService){const h=HANDS[state.handsService]; t+=h.flat!=null?h.flat:(h[state.handsLength]||h.Short);}
@@ -517,15 +553,21 @@
   }
   function prefillURL(){
     const p=new URLSearchParams(); const set=(k,v)=>{if(v)p.set(k,v)};
-    set('booking_type',state.type); set('hands_service',state.handsService); set('hands_length',state.handsLength);
-    set('feet_service',state.feetService); set('addons',state.addons.join(', '));
-    set('design__inspo_notes',state.notes); set('allergies__sensitivities',state.allergies); set('returning_client',state.returning);
+    set('first_name',state.first); set('last_name',state.last); set('email',state.email); set('phone',state.phone);
     return GHL_WIDGET_BASE+'?'+p.toString();
   }
   document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
     const to=+b.dataset.next;
     if(to===3) collect();
-    if(to===4){ collect(); $('#summary').innerHTML=summaryHTML(); slot.innerHTML='<iframe src="'+prefillURL()+'" scrolling="no"></iframe>'; }
+    if(to===4){
+      collect();
+      const emailOk=/.+@.+\..+/.test(state.email);
+      if(!state.first || !emailOk){ $('#fErr').classList.add('show'); return; }
+      $('#fErr').classList.remove('show');
+      submitIntake();
+      $('#summary').innerHTML=summaryHTML();
+      slot.innerHTML='<iframe src="'+prefillURL()+'" scrolling="no"></iframe>';
+    }
     showStep(to);
   }));
   document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{ const cur=+b.closest('.step').dataset.step; showStep(Math.max(1,cur-1)); }));
