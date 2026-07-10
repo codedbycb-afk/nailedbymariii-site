@@ -212,6 +212,12 @@
   .field.two{display:flex;gap:.7rem}.field.two>div{flex:1}
   .wiz .err{color:#a3324e;font-size:.8rem;margin:.3rem 0 0;display:none}
   .wiz .err.show{display:block}
+  .deposit-box{background:var(--pink-soft);border:1px solid var(--gold-line);border-radius:8px;padding:1.1rem 1.2rem;margin-bottom:1.1rem;text-align:center}
+  .deposit-box p{margin:.2rem 0;font-size:.92rem;color:var(--ink)}
+  .deposit-box .cashtag{font-family:"Cormorant Garamond",serif;font-size:1.95rem;color:var(--black);font-weight:600;margin:.35rem 0;letter-spacing:.01em}
+  .deposit-box .dep-note{font-size:.8rem;color:var(--ink);opacity:.72}
+  .paidcheck{display:flex;align-items:center;gap:.55rem;font-size:.92rem;color:var(--black);cursor:pointer;margin:.2rem 0 .2rem}
+  .paidcheck input{width:17px;height:17px;accent-color:var(--gold);flex:none}
 
   /* ——— lightbox ——— */
   .lightbox{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:5vw;background:rgba(19,16,19,.92);cursor:zoom-out}
@@ -457,13 +463,31 @@
           <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="you@email.com"></div>
           <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(216) 000-0000"></div>
           <p class="err" id="fErr">Please add your first name and email so Mari can confirm.</p>
-          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="4">Continue to booking</button></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="4">Continue</button></div>
         </div>
-        <!-- Step 4 — booking -->
+        <!-- Step 4 — deposit -->
         <div class="step" data-step="4">
+          <h4>Secure your spot</h4>
+          <p class="sub">A $10 deposit holds your appointment — it goes toward your total.</p>
+          <div class="deposit-box">
+            <p>Send <b>$10</b> on Cash App to</p>
+            <div class="cashtag">$mariana114</div>
+            <p class="dep-note">Screenshot your payment and upload it below. Mari confirms your time once she sees it.</p>
+          </div>
+          <div class="field"><label>Payment screenshot</label>
+            <label class="uploader" for="fDepProof">＋ Upload deposit screenshot</label>
+            <input id="fDepProof" type="file" accept="image/*" hidden>
+            <div class="thumbs" id="depThumbs"></div>
+          </div>
+          <label class="paidcheck"><input type="checkbox" id="fPaid"> I've sent my $10 deposit to $mariana114</label>
+          <p class="err" id="depErr">Please upload your payment screenshot and check the box to continue.</p>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="5">Continue to booking</button></div>
+        </div>
+        <!-- Step 5 — booking -->
+        <div class="step" data-step="5">
           <div class="summary" id="summary"></div>
           <div id="ghlSlot"></div>
-          <div class="wiz-nav"><button class="btn ghost" data-back>Back to details</button></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button></div>
         </div>
       </div>
     </div>
@@ -479,7 +503,7 @@
   const ADDONS={"Soak off":10,"Foreign soak off":15};
   const LENGTHS=["Short","Medium","Long","XL"];
   const INTAKE_ENDPOINT="https://codedbycb-platform.vercel.app/api/booking/mari-intake";
-  const state={type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",pendingHands:null};
+  const state={type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",depositPaid:"",pendingHands:null};
   let photoFiles=[];
   const modal=document.getElementById('bookModal'), slot=document.getElementById('ghlSlot'), title=document.getElementById('modalTitle');
   const $=(s)=>document.querySelector(s);
@@ -493,10 +517,12 @@
   function syncLen(){$('#handsLenField').style.display=hasLength()?'block':'none';}
 
   function openBooking(service){
-    Object.assign(state,{type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",pendingHands:(service&&HANDS[service])?service:null});
+    Object.assign(state,{type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",depositPaid:"",pendingHands:(service&&HANDS[service])?service:null});
     document.querySelectorAll('.choice,.chip').forEach(c=>c.classList.remove('sel'));
     ['#fNotes','#fAllergies','#fFirst','#fLast','#fEmail','#fPhone'].forEach(s=>{const el=$(s);if(el)el.value='';});
-    photoFiles=[]; renderThumbs(); $('#fErr').classList.remove('show');
+    photoFiles=[]; renderThumbs(); depProofFile=null; renderDep();
+    const pc=$('#fPaid'); if(pc)pc.checked=false;
+    $('#fErr').classList.remove('show'); $('#depErr').classList.remove('show');
     title.textContent='Book your appointment';
     showStep(1);
     modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
@@ -520,6 +546,10 @@
   function renderThumbs(){$('#thumbs').innerHTML=photoFiles.map((f,i)=>`<div class="th"><img src="${URL.createObjectURL(f)}"><button data-rm="${i}" aria-label="Remove">×</button></div>`).join('');
     document.querySelectorAll('#thumbs [data-rm]').forEach(b=>b.addEventListener('click',()=>{photoFiles.splice(+b.dataset.rm,1);renderThumbs();}));}
   $('#fPhotos').addEventListener('change',e=>{photoFiles=photoFiles.concat([...e.target.files].filter(f=>f.type.startsWith('image/'))).slice(0,8);renderThumbs();e.target.value='';});
+  // deposit proof (single screenshot)
+  let depProofFile=null;
+  function renderDep(){const c=$('#depThumbs');if(!c)return;c.innerHTML=depProofFile?`<div class="th"><img src="${URL.createObjectURL(depProofFile)}"><button data-rmdep aria-label="Remove">×</button></div>`:'';const b=c.querySelector('[data-rmdep]');if(b)b.addEventListener('click',()=>{depProofFile=null;renderDep();});}
+  $('#fDepProof').addEventListener('change',e=>{const f=[...e.target.files].find(x=>x.type.startsWith('image/'));if(f)depProofFile=f;renderDep();e.target.value='';});
 
   function collect(){
     const hands=state.type!=='Feet only', feet=state.type!=='Hands only';
@@ -537,7 +567,9 @@
     fd.append('booking_type',state.type||''); fd.append('hands_service',state.handsService||''); fd.append('hands_length',state.handsLength||'');
     fd.append('feet_service',state.feetService||''); fd.append('addons',state.addons.join(', '));
     fd.append('notes',state.notes); fd.append('allergies',state.allergies); fd.append('returning',state.returning||'');
+    fd.append('deposit_paid',state.depositPaid||'Yes');
     photoFiles.forEach(f=>fd.append('photos',f));
+    if(depProofFile) fd.append('depositProof',depProofFile);
     fetch(INTAKE_ENDPOINT,{method:'POST',body:fd}).catch(()=>{}); // non-blocking; booking proceeds regardless
   }
   function estimate(){let t=0;
@@ -549,7 +581,7 @@
     if(state.handsService)bits.push(`<b>Hands:</b> ${state.handsService}${state.handsLength?' · '+state.handsLength:''}`);
     if(state.feetService)bits.push(`<b>Feet:</b> ${state.feetService}`);
     if(state.addons.length)bits.push(`<b>Add-ons:</b> ${state.addons.join(', ')}`);
-    return bits.join('<br>')+`<br><span class="est">Est. $${estimate()}</span> <span style="opacity:.7">· + deposit to hold your seat</span>`;
+    return bits.join('<br>')+`<br><span class="est">Est. $${estimate()}</span> <span style="opacity:.7">· $10 deposit sent ✓</span>`;
   }
   function prefillURL(){
     const p=new URLSearchParams(); const set=(k,v)=>{if(v)p.set(k,v)};
@@ -559,11 +591,16 @@
   document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
     const to=+b.dataset.next;
     if(to===3) collect();
-    if(to===4){
+    if(to===4){ // details -> deposit: validate contact
       collect();
       const emailOk=/.+@.+\..+/.test(state.email);
       if(!state.first || !emailOk){ $('#fErr').classList.add('show'); return; }
       $('#fErr').classList.remove('show');
+    }
+    if(to===5){ // deposit -> booking: require proof + confirmation
+      if(!$('#fPaid').checked || !depProofFile){ $('#depErr').classList.add('show'); return; }
+      $('#depErr').classList.remove('show');
+      state.depositPaid='Yes';
       submitIntake();
       $('#summary').innerHTML=summaryHTML();
       slot.innerHTML='<iframe src="'+prefillURL()+'" scrolling="no"></iframe>';
