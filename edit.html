@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta name="robots" content="noindex,nofollow"/>
+<title>Nailed by Mari — Edit Photos</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--pink:#FBE1EA;--pink-soft:#FFF3F7;--black:#131013;--ink:#231e22;--gold:#C29A4B;--ok:#2e7d54;--err:#a3324e;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--pink);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;padding:0 0 4rem}
+  .wrap{width:min(940px,92vw);margin-inline:auto}
+  header{text-align:center;padding:2.2rem 0 1rem}
+  h1{font-family:"Cormorant Garamond",serif;font-weight:600;color:var(--black);font-size:clamp(1.9rem,6vw,2.7rem);margin:0}
+  .sub{max-width:52ch;margin:.7rem auto 0;font-size:.95rem;line-height:1.5}
+
+  /* PIN gate */
+  #gate{max-width:340px;margin:3rem auto;text-align:center;background:var(--pink-soft);border:1px solid rgba(194,154,75,.5);border-radius:14px;padding:2rem 1.6rem}
+  #gate h2{font-family:"Cormorant Garamond",serif;font-weight:600;margin:0 0 .3rem;color:var(--black);font-size:1.7rem}
+  #gate p{font-size:.9rem;margin:0 0 1.2rem}
+  #pin{width:100%;font-size:1.4rem;text-align:center;letter-spacing:.4em;padding:.7rem;border:1px solid rgba(19,16,19,.15);border-radius:10px;background:#fff;color:var(--black)}
+  .btn{display:inline-block;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:.8rem;background:var(--black);color:#fff;border:0;padding:.8rem 1.4rem;border-radius:8px;cursor:pointer;width:100%;margin-top:1rem}
+  .btn.gold{background:var(--gold);color:var(--black)}
+  #gateErr{color:var(--err);font-size:.85rem;margin-top:.7rem;min-height:1.1em}
+
+  /* editor */
+  #editor{display:none}
+  .bar{display:flex;align-items:center;justify-content:space-between;gap:1rem;background:var(--black);color:#f4e6ec;border-radius:12px;padding:.9rem 1.2rem;margin:1rem 0 1.8rem;font-size:.9rem;line-height:1.4}
+  .bar b{color:var(--gold)}
+  .bar button{background:none;border:1px solid rgba(255,255,255,.35);color:#f4e6ec;border-radius:8px;padding:.4rem .7rem;font-size:.75rem;cursor:pointer;white-space:nowrap}
+  h3.grp{font-family:"Cormorant Garamond",serif;font-weight:600;color:var(--black);font-size:1.5rem;margin:1.8rem 0 .8rem;border-bottom:1px solid rgba(194,154,75,.5);padding-bottom:.35rem}
+  .grid{display:grid;gap:1rem}
+  .features{grid-template-columns:repeat(3,1fr)}
+  .gallery{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:760px){.features{grid-template-columns:repeat(2,1fr)}.gallery{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:440px){.features,.gallery{grid-template-columns:repeat(2,1fr)}}
+  .cell{position:relative;background:var(--pink-soft);border-radius:12px;overflow:hidden;border:1px solid rgba(19,16,19,.1)}
+  .cell .ph{aspect-ratio:4/5;overflow:hidden;position:relative}
+  .cell img{width:100%;height:100%;object-fit:cover;display:block}
+  .badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#fff;font-weight:700;font-size:1rem;min-width:2rem;height:2rem;padding:0 .5rem;border-radius:8px;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.35);z-index:2}
+  .cap{padding:.5rem .65rem;font-size:.78rem;color:var(--ink);line-height:1.3;min-height:1em}
+  .cap b{color:var(--black)}
+  .change{display:block;width:100%;text-align:center;background:var(--black);color:#fff;border:0;padding:.62rem;font-size:.76rem;font-weight:600;letter-spacing:.05em;text-transform:uppercase;cursor:pointer}
+  .change:hover{background:var(--gold);color:var(--black)}
+  .cell input[type=file]{display:none}
+  /* status overlay */
+  .status{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;gap:.5rem;background:rgba(19,16,19,.72);color:#fff;font-size:.85rem;text-align:center;padding:.6rem;z-index:3}
+  .cell.busy .status{display:flex}
+  .cell.done .status{display:flex;background:rgba(46,125,84,.85)}
+  .cell.fail .status{display:flex;background:rgba(163,50,78,.85)}
+  .spin{width:26px;height:26px;border:3px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:sp .8s linear infinite}
+  @keyframes sp{to{transform:rotate(360deg)}}
+  footer{text-align:center;margin-top:2.6rem;font-size:.82rem;color:var(--ink);opacity:.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Edit Your Photos</h1>
+    <p class="sub">Tap <b>Change photo</b> under any picture, pick a new one from your phone, and it goes live on your site in about a minute. That's it.</p>
+  </header>
+
+  <!-- PIN GATE -->
+  <div id="gate">
+    <h2>Enter your PIN</h2>
+    <p>The code CB gave you.</p>
+    <input id="pin" type="tel" inputmode="numeric" autocomplete="off" placeholder="••••" maxlength="12"/>
+    <button class="btn gold" id="enter">Unlock</button>
+    <div id="gateErr"></div>
+  </div>
+
+  <!-- EDITOR -->
+  <div id="editor">
+    <div class="bar">
+      <div>💅 <b>You're in.</b> Tap “Change photo”, pick from your camera roll, done. Give it ~1 min, then refresh your live site.</div>
+      <button id="lock">Lock</button>
+    </div>
+
+    <h3 class="grp">Feature spots</h3>
+    <div class="grid features" id="featGrid"></div>
+
+    <h3 class="grp">The Work gallery</h3>
+    <div class="grid gallery" id="galGrid"></div>
+
+    <footer>Nailed by Mari · Photo Editor</footer>
+  </div>
+</div>
+
+<script>
+  const ENDPOINT = "https://codedbycb-platform.vercel.app/api/booking/mari-photo";
+  const MAX_SIDE = 1400, QUALITY = 0.82;
+
+  const FEATURES = [
+    {slot:"A", cap:"<b>Hero photo</b> — the big one up top"},
+    {slot:"B", cap:"<b>About band</b> — Licensed & Cleveland-based"},
+    {slot:"C", cap:"<b>Service:</b> Acrylic Full Set"},
+    {slot:"D", cap:"<b>Service:</b> Gel-X Full Set"},
+    {slot:"E", cap:"<b>Service:</b> Builder Gel"},
+    {slot:"F", cap:"<b>Service:</b> Mani & Pedi"},
+  ];
+  const GALLERY = Array.from({length:11},(_,i)=>({slot:"G"+(i+1), cap:""}));
+
+  const $ = (s)=>document.querySelector(s);
+  const gate=$("#gate"), editor=$("#editor"), pinInput=$("#pin"), gateErr=$("#gateErr");
+
+  function getPin(){ return sessionStorage.getItem("mari_pin") || ""; }
+  function setPin(p){ sessionStorage.setItem("mari_pin", p); }
+  function clearPin(){ sessionStorage.removeItem("mari_pin"); }
+
+  function bust(slot){ return `assets/site/${slot}.jpg?t=${Date.now()}`; }
+
+  function cellHTML(item){
+    return `<div class="cell" data-slot="${item.slot}">
+      <div class="ph">
+        <span class="badge">${item.slot}</span>
+        <img src="assets/site/${item.slot}.jpg" alt="">
+        <div class="status"><div class="spin"></div><div class="msg">Uploading…</div></div>
+      </div>
+      ${item.cap?`<div class="cap">${item.cap}</div>`:""}
+      <button class="change">＋ Change photo</button>
+      <input type="file" accept="image/*">
+    </div>`;
+  }
+
+  function renderGrids(){
+    $("#featGrid").innerHTML = FEATURES.map(cellHTML).join("");
+    $("#galGrid").innerHTML  = GALLERY.map(cellHTML).join("");
+    document.querySelectorAll(".cell").forEach(cell=>{
+      const btn=cell.querySelector(".change"), input=cell.querySelector('input[type=file]');
+      btn.addEventListener("click",()=>input.click());
+      input.addEventListener("change",e=>{
+        const f=e.target.files[0]; e.target.value="";
+        if(f) uploadSlot(cell, f);
+      });
+    });
+  }
+
+  // resize any phone photo (incl. HEIC that the browser can decode) down to a web-friendly jpeg
+  function resize(file){
+    return new Promise((resolve,reject)=>{
+      const img=new Image(), url=URL.createObjectURL(file);
+      img.onload=()=>{
+        URL.revokeObjectURL(url);
+        let {width:w,height:h}=img;
+        const scale=Math.min(1, MAX_SIDE/Math.max(w,h));
+        w=Math.round(w*scale); h=Math.round(h*scale);
+        const c=document.createElement("canvas"); c.width=w; c.height=h;
+        c.getContext("2d").drawImage(img,0,0,w,h);
+        c.toBlob(b=> b?resolve(b):reject(new Error("Could not process that image")), "image/jpeg", QUALITY);
+      };
+      img.onerror=()=>{ URL.revokeObjectURL(url); reject(new Error("That file isn't a photo I can read. Try a JPG or screenshot.")); };
+      img.src=url;
+    });
+  }
+
+  async function uploadSlot(cell, file){
+    const slot=cell.dataset.slot;
+    const msg=cell.querySelector(".msg");
+    cell.classList.remove("done","fail"); cell.classList.add("busy");
+    msg.textContent="Preparing…";
+    try{
+      const blob=await resize(file);
+      msg.textContent="Uploading…";
+      const fd=new FormData();
+      fd.append("pin", getPin());
+      fd.append("slot", slot);
+      fd.append("image", blob, slot+".jpg");
+      const r=await fetch(ENDPOINT,{method:"POST",body:fd});
+      const j=await r.json().catch(()=>({}));
+      if(r.status===401){ // bad PIN — kick back to gate
+        cell.classList.remove("busy");
+        clearPin(); showGate("That PIN didn't work. Try again.");
+        return;
+      }
+      if(!r.ok || !j.ok) throw new Error(j.error||"Upload failed");
+      cell.classList.remove("busy"); cell.classList.add("done");
+      msg.textContent="✓ Live in ~1 min";
+      // refresh the thumbnail after Pages rebuilds
+      setTimeout(()=>{ cell.querySelector("img").src=bust(slot); cell.classList.remove("done"); }, 60000);
+    }catch(err){
+      cell.classList.remove("busy"); cell.classList.add("fail");
+      msg.textContent="✕ "+(err.message||"Failed");
+      setTimeout(()=>cell.classList.remove("fail"), 4000);
+    }
+  }
+
+  function showEditor(){ gate.style.display="none"; editor.style.display="block"; renderGrids(); }
+  function showGate(err){
+    editor.style.display="none"; gate.style.display="block";
+    gateErr.textContent=err||""; pinInput.value=""; pinInput.focus();
+  }
+
+  $("#enter").addEventListener("click",()=>{
+    const p=pinInput.value.trim();
+    if(!p){ gateErr.textContent="Enter your PIN."; return; }
+    setPin(p); gateErr.textContent=""; showEditor();
+  });
+  pinInput.addEventListener("keydown",e=>{ if(e.key==="Enter") $("#enter").click(); });
+  $("#lock").addEventListener("click",()=>{ clearPin(); showGate(""); });
+
+  // resume if already unlocked this session
+  if(getPin()) showEditor();
+</script>
+</body>
+</html>
