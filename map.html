@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Nailed by Mari — Photo Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--pink:#FBE1EA;--pink-soft:#FFF3F7;--black:#131013;--ink:#231e22;--gold:#C29A4B;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--pink);color:var(--ink);font-family:"DM Sans",system-ui,sans-serif;padding:0 0 4rem}
+  .wrap{width:min(1000px,92vw);margin-inline:auto}
+  header{text-align:center;padding:2.6rem 0 1.4rem}
+  h1{font-family:"Cormorant Garamond",serif;font-weight:600;color:var(--black);font-size:clamp(2rem,6vw,3rem);margin:0}
+  .sub{max-width:56ch;margin:.8rem auto 0;font-size:.98rem;line-height:1.55}
+  .how{background:var(--black);color:#f4e6ec;border-radius:12px;padding:1.4rem 1.6rem;margin:1.6rem 0 2.4rem;font-size:.95rem;line-height:1.6}
+  .how b{color:var(--gold)}
+  .how code{background:rgba(255,255,255,.12);padding:.1rem .4rem;border-radius:4px}
+  h2{font-family:"Cormorant Garamond",serif;font-weight:600;color:var(--black);font-size:1.7rem;margin:2.2rem 0 .9rem;border-bottom:1px solid rgba(194,154,75,.5);padding-bottom:.4rem}
+  .grid{display:grid;gap:1.1rem}
+  .features{grid-template-columns:repeat(3,1fr)}
+  .gallery{grid-template-columns:repeat(4,1fr)}
+  @media(max-width:760px){.features{grid-template-columns:repeat(2,1fr)}.gallery{grid-template-columns:repeat(3,1fr)}}
+  @media(max-width:460px){.features,.gallery{grid-template-columns:repeat(2,1fr)}}
+  .cell{position:relative;background:var(--pink-soft);border-radius:10px;overflow:hidden;border:1px solid rgba(19,16,19,.1)}
+  .cell .ph{aspect-ratio:4/5;overflow:hidden}
+  .cell img{width:100%;height:100%;object-fit:cover;display:block}
+  .badge{position:absolute;top:8px;left:8px;background:var(--gold);color:#fff;font-weight:700;
+    font-size:1.05rem;min-width:2.1rem;height:2.1rem;padding:0 .5rem;border-radius:8px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.35);letter-spacing:.02em}
+  .cap{padding:.55rem .7rem .7rem;font-size:.8rem;color:var(--ink);line-height:1.3}
+  .cap b{color:var(--black)}
+  footer{text-align:center;margin-top:3rem;font-size:.85rem;color:var(--ink);opacity:.7}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Your Site — Photo Map</h1>
+    <p class="sub">Every photo on your site has a letter. When you want to change one, just send the new photo and its letter.</p>
+  </header>
+
+  <div class="how">
+    📲 <b>How to change a photo:</b> Text me the <b>photo you want up</b> and the <b>letter</b> of the spot it goes in.<br>
+    Example: <i>“Put this in <code>G5</code>”</i> or <i>“New hero pic — that’s <code>A</code>.”</i><br>
+    That’s it. It’ll be live on your site in about a minute.
+  </div>
+
+  <h2>Feature spots</h2>
+  <div class="grid features">
+    <div class="cell"><div class="ph"><img src="assets/site/A.jpg"></div><span class="badge">A</span><div class="cap"><b>Hero photo</b> — the big one at the very top</div></div>
+    <div class="cell"><div class="ph"><img src="assets/site/B.jpg"></div><span class="badge">B</span><div class="cap"><b>About band</b> — “Licensed &amp; Cleveland-based”</div></div>
+    <div class="cell"><div class="ph"><img src="assets/site/C.jpg"></div><span class="badge">C</span><div class="cap"><b>Service:</b> Acrylic Full Set</div></div>
+    <div class="cell"><div class="ph"><img src="assets/site/D.jpg"></div><span class="badge">D</span><div class="cap"><b>Service:</b> Gel-X Full Set</div></div>
+    <div class="cell"><div class="ph"><img src="assets/site/E.jpg"></div><span class="badge">E</span><div class="cap"><b>Service:</b> Builder Gel</div></div>
+    <div class="cell"><div class="ph"><img src="assets/site/F.jpg"></div><span class="badge">F</span><div class="cap"><b>Service:</b> Mani &amp; Pedi</div></div>
+  </div>
+
+  <h2>The Work gallery</h2>
+  <div class="grid gallery">
+    <div class="cell"><div class="ph"><img src="assets/site/G1.jpg"></div><span class="badge">G1</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G2.jpg"></div><span class="badge">G2</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G3.jpg"></div><span class="badge">G3</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G4.jpg"></div><span class="badge">G4</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G5.jpg"></div><span class="badge">G5</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G6.jpg"></div><span class="badge">G6</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G7.jpg"></div><span class="badge">G7</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G8.jpg"></div><span class="badge">G8</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G9.jpg"></div><span class="badge">G9</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G10.jpg"></div><span class="badge">G10</span></div>
+    <div class="cell"><div class="ph"><img src="assets/site/G11.jpg"></div><span class="badge">G11</span></div>
+  </div>
+
+  <footer>Nailed by Mari · Photo Map · keep this handy 💅</footer>
+</div>
+</body>
+</html>
