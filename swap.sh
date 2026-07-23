@@ -14,7 +14,10 @@
 #   C  = Service card: Acrylic Full Set
 #   D  = Service card: Gel-X Full Set
 #   E  = Service card: Builder Gel
-#   F  = Service card: Mani & Pedi
+#   F  = Service card: Manicure
+#   H  = Service card: Acrylic Fill
+#   J  = Service card: Gel-X Fill
+#   K  = Service card: Pedicure
 #   G1..G11 = The Work gallery, left-to-right, top-to-bottom
 #
 # Handles iPhone HEIC, resizes + compresses, commits, and pushes to GitHub Pages.
@@ -26,7 +29,7 @@ cd "$(dirname "$0")"
 SLOT="$1"
 SRC="$2"
 
-VALID="A B C D E F G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11"
+VALID="A B C D E F H J K G1 G2 G3 G4 G5 G6 G7 G8 G9 G10 G11"
 
 usage () {
   echo ""

@@ -16,7 +16,10 @@ you the new photo + the letter; you run one command; it's live in ~1 minute.
 | C | Service card — Acrylic Full Set |
 | D | Service card — Gel-X Full Set |
 | E | Service card — Builder Gel |
-| F | Service card — Mani & Pedi |
+| F | Service card — Manicure |
+| H | Service card — Acrylic Fill |
+| J | Service card — Gel-X Fill |
+| K | Service card — Pedicure |
 | G1–G11 | "The Work" gallery, left→right, top→bottom |
 
 ## When Mari sends a new photo
