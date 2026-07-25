@@ -219,6 +219,23 @@
   .paidcheck{display:flex;align-items:center;gap:.55rem;font-size:.92rem;color:var(--black);cursor:pointer;margin:.2rem 0 .2rem}
   .paidcheck input{width:17px;height:17px;accent-color:var(--gold);flex:none}
 
+  /* ——— conversational wizard ——— */
+  .wiz-progress{display:flex;gap:.42rem;justify-content:center;margin:0 0 1.15rem}
+  .wiz-progress i{width:7px;height:7px;border-radius:50%;background:var(--pink-deep);transition:background .3s,transform .3s}
+  .wiz-progress i.on{background:var(--gold);transform:scale(1.3)}
+  .wiz-progress i.done{background:var(--gold-lt)}
+  .bot{display:flex;gap:.6rem;align-items:flex-start;margin:0 0 1.05rem}
+  .bot .ava{flex:none;width:34px;height:34px;border-radius:50%;background:var(--black);color:var(--gold);display:grid;place-items:center;font-family:"Cormorant Garamond",serif;font-size:1.25rem;font-weight:600;line-height:1}
+  .bot .bub{background:#fff;border:1px solid var(--line);border-radius:4px 14px 14px 14px;padding:.7rem .95rem;line-height:1.4}
+  .bot .bub .q{font-family:"Cormorant Garamond",serif;font-size:1.4rem;color:var(--black);display:block;line-height:1.14;margin-bottom:.12rem}
+  .bot .bub small{color:var(--ink);opacity:.62;font-size:.85rem;line-height:1.35;display:block}
+  .idcard{background:#fff;border:1px solid var(--gold-line);border-radius:10px;padding:1rem 1.1rem;margin:0 0 1rem}
+  .idcard .nm{font-family:"Cormorant Garamond",serif;font-size:1.55rem;color:var(--black);font-weight:600;line-height:1;margin-bottom:.35rem}
+  .idcard .row{font-size:.92rem;color:var(--ink);display:flex;gap:.6rem;padding:.12rem 0}
+  .idcard .row span{opacity:.55;min-width:78px;flex:none}
+  .two-btn{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+  .chip.notsure{margin-top:.65rem;font-size:.9rem}
+
   /* ——— lightbox ——— */
   .lightbox{position:fixed;inset:0;z-index:70;display:none;align-items:center;justify-content:center;padding:5vw;background:rgba(19,16,19,.92);cursor:zoom-out}
   .lightbox.open{display:flex}
@@ -450,79 +467,121 @@
 
 <div class="book-bar"><a class="btn gold" href="#" data-book>Book your appointment</a></div>
 
-<!-- ——— BOOKING WIZARD ——— -->
+<!-- ——— BOOKING WIZARD (conversational) ——— -->
 <div class="modal" id="bookModal" aria-hidden="true">
   <div class="modal-card">
     <div class="modal-top"><h3 id="modalTitle">Book your appointment</h3><button class="modal-close" data-close aria-label="Close">×</button></div>
     <div class="modal-body">
       <div class="wiz">
-        <!-- Step 1 — type -->
-        <div class="step active" data-step="1">
-          <h4>What are we booking?</h4>
-          <p class="sub">Hands, feet, or both — your call.</p>
+        <div class="wiz-progress" id="wizDots" aria-hidden="true"></div>
+
+        <!-- PHONE + identity check -->
+        <div class="step active" data-step="phone">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">Hey love — let's get you booked ✨</span><small>What's your number? I'll check if you've been in before.</small></div></div>
+          <div class="field"><label>Phone number</label><input id="fPhone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(216) 000-0000"></div>
+          <p class="err" id="phoneErr">Please enter a valid phone number so I can look you up.</p>
+
+          <div id="idBlock" style="display:none">
+            <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">Found you! Is this still right?</span></div></div>
+            <div class="idcard" id="idCard"></div>
+            <div class="two-btn">
+              <button class="btn gold" id="idYes">Yes, that's me</button>
+              <button class="btn ghost" id="idNo">No — I'm new</button>
+            </div>
+          </div>
+
+          <div class="wiz-nav" id="phoneNav"><span></span><button class="btn gold" id="phoneGo">Continue</button></div>
+        </div>
+
+        <!-- SERVICE -->
+        <div class="step" data-step="service">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">First — what are we doing today?</span></div></div>
           <div class="choices">
-            <button class="choice" data-type="Hands only">Just my hands<span class="c-sub">Acrylic · Gel-X · Builder Gel · Gel Mani</span></button>
-            <button class="choice" data-type="Feet only">Just my feet<span class="c-sub">Gel Pedi · Acrylic toes</span></button>
-            <button class="choice" data-type="Hands + Feet">Hands + Feet<span class="c-sub">Book both in one visit</span></button>
+            <button class="choice" data-service="Fill-in">Fill-in</button>
+            <button class="choice" data-service="Full Set">Full Set</button>
+            <button class="choice" data-service="Full Set + Soak Off">Full Set + Soak Off<span class="c-sub">Removing a previous set first</span></button>
           </div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><span></span></div>
         </div>
-        <!-- Step 2 — services -->
-        <div class="step" data-step="2">
-          <h4>Pick your services</h4>
-          <p class="sub">Choose what you'd like done.</p>
-          <div class="pickblock" id="handsBlock">
-            <h5>Hands</h5>
-            <div class="field"><label>Service</label><select id="handsService"></select></div>
-            <div class="field" id="handsLenField"><label>Length</label><select id="handsLength"></select></div>
+
+        <!-- ADD TOES? -->
+        <div class="step" data-step="toes">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">Want to add your toes? 💅</span></div></div>
+          <div class="two-btn">
+            <button class="choice" data-toes="Yes" style="align-items:center;text-align:center">Yes, add toes</button>
+            <button class="choice" data-toes="No" style="align-items:center;text-align:center">No, just hands</button>
           </div>
-          <div class="pickblock" id="feetBlock">
-            <h5>Feet</h5>
-            <div class="field"><label>Service</label><select id="feetService"></select></div>
-          </div>
-          <div class="field"><label>Add-ons (optional)</label><div class="chips" id="addonChips"></div></div>
-          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn" data-next="3">Next</button></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><span></span></div>
         </div>
-        <!-- Step 3 — details -->
-        <div class="step" data-step="3">
-          <h4>The details</h4>
-          <p class="sub">Help Mari prep — then pick your time.</p>
-          <div class="field"><label>Design / inspo notes</label><textarea id="fNotes" placeholder="Colors, shape, vibe…"></textarea></div>
-          <div class="field"><label>Inspo photos (optional)</label>
-            <label class="uploader" for="fPhotos">＋ Add reference photos</label>
+
+        <!-- TOE TYPE -->
+        <div class="step" data-step="toetype">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">What kind of toes?</span></div></div>
+          <div class="choices">
+            <button class="choice" data-toetype="Full acrylic">Full acrylic</button>
+            <button class="choice" data-toetype="Acrylic big toe (rest gel)">Acrylic on big toe<span class="c-sub">The rest in gel</span></button>
+            <button class="choice" data-toetype="Full gel">Full gel</button>
+          </div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><span></span></div>
+        </div>
+
+        <!-- NAIL TYPE -->
+        <div class="step" data-step="nailtype">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">What type of nails?</span></div></div>
+          <div class="choices">
+            <button class="choice" data-nailtype="Gel X">Gel X</button>
+            <button class="choice" data-nailtype="Acrylic">Acrylic</button>
+            <button class="choice" data-nailtype="Builder Gel">Builder Gel<span class="c-sub">One length — natural overlay</span></button>
+            <button class="choice" data-nailtype="Regular gel polish">Regular gel polish<span class="c-sub">Manicure on natural nails</span></button>
+          </div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><span></span></div>
+        </div>
+
+        <!-- LENGTH -->
+        <div class="step" data-step="length">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">What length are we going?</span></div></div>
+          <div class="choices" style="grid-template-columns:1fr 1fr">
+            <button class="choice" data-length="Short" style="align-items:center">Short</button>
+            <button class="choice" data-length="Medium" style="align-items:center">Medium</button>
+            <button class="choice" data-length="Long" style="align-items:center">Long</button>
+            <button class="choice" data-length="Xtra Long" style="align-items:center">Xtra Long</button>
+          </div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><span></span></div>
+        </div>
+
+        <!-- SHAPE -->
+        <div class="step" data-step="shape">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">What shape do you want?</span><small>Type any shape you like — or tap "not sure" and we'll figure it out at your appointment.</small></div></div>
+          <div class="field"><label>Shape</label><input id="fShape" type="text" autocomplete="off" placeholder="coffin"></div>
+          <button class="chip notsure" id="shapeNotSure" type="button">🤔 Not sure yet</button>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" id="shapeGo">Next</button></div>
+        </div>
+
+        <!-- DESIGN -->
+        <div class="step" data-step="design">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">Show me the vibe 🎨</span><small>Upload inspo pics, or just describe what you want. Both optional.</small></div></div>
+          <div class="field">
+            <label class="uploader" for="fPhotos">＋ Add inspiration photos</label>
             <input id="fPhotos" type="file" accept="image/*" multiple hidden>
             <div class="thumbs" id="thumbs"></div>
           </div>
-          <div class="field"><label>Allergies / sensitivities</label><input id="fAllergies" placeholder="Optional"></div>
-          <div class="field"><label>Been to Mari before?</label><div class="chips" id="returningChips"><span class="chip" data-ret="Yes">Yes</span><span class="chip" data-ret="No">First time</span></div></div>
-          <div class="field two"><div><label>First name</label><input id="fFirst"></div><div><label>Last name</label><input id="fLast"></div></div>
-          <div class="field"><label>Email</label><input id="fEmail" type="email" placeholder="you@email.com"></div>
-          <div class="field"><label>Phone</label><input id="fPhone" type="tel" placeholder="(216) 000-0000"></div>
-          <p class="err" id="fErr">Please add your first name and email so Mari can confirm.</p>
-          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="4">Continue</button></div>
+          <div class="field"><label>Or describe it</label><textarea id="fNotes" placeholder="Colors, theme, charms, French, chrome…"></textarea></div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" id="designGo">Pick my time</button></div>
         </div>
-        <!-- Step 4 — deposit -->
-        <div class="step" data-step="4">
-          <h4>Secure your spot</h4>
-          <p class="sub">A $10 deposit holds your appointment — it goes toward your total.</p>
-          <div class="deposit-box">
-            <p>Send <b>$10</b> on Cash App to</p>
-            <div class="cashtag">$mariana114</div>
-            <p class="dep-note">Screenshot your payment and upload it below. Mari confirms your time once she sees it.</p>
-          </div>
-          <div class="field"><label>Payment screenshot</label>
-            <label class="uploader" for="fDepProof">＋ Upload deposit screenshot</label>
-            <input id="fDepProof" type="file" accept="image/*" hidden>
-            <div class="thumbs" id="depThumbs"></div>
-          </div>
-          <label class="paidcheck"><input type="checkbox" id="fPaid"> I've sent my $10 deposit to $mariana114</label>
-          <p class="err" id="depErr">Please upload your payment screenshot and check the box to continue.</p>
-          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><button class="btn gold" data-next="5">Continue to booking</button></div>
-        </div>
-        <!-- Step 5 — booking -->
-        <div class="step" data-step="5">
+
+        <!-- BOOK -->
+        <div class="step" data-step="book">
+          <div class="bot"><div class="ava">m</div><div class="bub"><span class="q">Perfect — here's your set 👇</span></div></div>
           <div class="summary" id="summary"></div>
+          <div class="field two"><div><label>Your name</label><input id="fName" placeholder="First name"></div><div><label>Instagram <span style="opacity:.5">(optional)</span></label><input id="fIg" placeholder="@handle"></div></div>
+          <div class="bot" style="margin-top:.5rem"><div class="ava">m</div><div class="bub"><span class="q">Now pick your day &amp; time 🗓️</span><small>Only my real open slots show below.</small></div></div>
           <div id="ghlSlot"></div>
-          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button></div>
+          <div class="deposit-box">
+            <p>A <b>$10 deposit</b> holds your spot &amp; goes toward your total.</p>
+            <div class="cashtag">$mariana114</div>
+            <p class="dep-note">Cash App, or Apple Pay / Zelle to <b>216-358-4802</b>. Send it after you pick your time — Mari confirms once it lands.</p>
+          </div>
+          <div class="wiz-nav"><button class="btn ghost" data-back>Back</button><span></span></div>
         </div>
       </div>
     </div>
@@ -533,125 +592,188 @@
 
 <script>
   const GHL_WIDGET_BASE = "https://api.leadconnectorhq.com/widget/booking/XC6BoVnM8Hzyq8bPdUR4";
-  const HANDS={"Acrylic Full Set":{Short:50,Medium:60,Long:70,XL:80},"Acrylic Fill":{Short:45,Medium:55,Long:65,XL:75},"Gel-X Full Set":{Short:45,Medium:55,Long:65,XL:75},"Gel-X Fill":{Short:40,Medium:50,Long:60,XL:70},"Builder Gel":{flat:45},"Gel Mani":{flat:25}};
-  const FEET={"Gel Pedi":35,"Acrylic Big Toe":40,"Acrylic Toes (full set)":45};
-  const ADDONS={"Soak off":10,"Foreign soak off":15};
-  const LENGTHS=["Short","Medium","Long","XL"];
-  const INTAKE_ENDPOINT="https://codedbycb-platform.vercel.app/api/booking/mari-intake";
-  const state={type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",depositPaid:"",pendingHands:null};
-  let photoFiles=[];
+  const INTAKE_ENDPOINT  = "https://codedbycb-platform.vercel.app/api/booking/mari-intake";
+  const LOOKUP_ENDPOINT  = ""; // optional server lookup: POST {phone} -> {found,name,phone,igHandle,lastSet}. Blank = this-device memory only.
+  const CUSTOMER_KEY     = "mari_customer_v1";
+
+  const state={phone:"",returning:null,customer:null,service:null,toes:null,toetype:null,nailtype:null,length:null,shape:"",notes:"",name:"",ig:""};
+  let photoFiles=[], booked=false, current='phone';
   const modal=document.getElementById('bookModal'), slot=document.getElementById('ghlSlot'), title=document.getElementById('modalTitle');
   const $=(s)=>document.querySelector(s);
-  const hs=$('#handsService'); hs.innerHTML=Object.keys(HANDS).map(n=>`<option>${n}</option>`).join('');
-  const fs=$('#feetService'); fs.innerHTML=Object.keys(FEET).map(n=>`<option>${n}</option>`).join('');
-  const hl=$('#handsLength'); hl.innerHTML=LENGTHS.map(n=>`<option>${n}</option>`).join('');
-  $('#addonChips').innerHTML=Object.keys(ADDONS).map(n=>`<span class="chip" data-addon="${n}">${n} +$${ADDONS[n]}</span>`).join('');
+  const bodyEl=()=>modal.querySelector('.modal-body');
+  const digits=(s)=>(s||'').replace(/\D/g,'');
+  const prettyPhone=(s)=>{const d=digits(s).slice(-10);return d.length===10?`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`:s;};
 
-  function showStep(n){document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',+s.dataset.step===n)); const b=modal.querySelector('.modal-body'); if(b)b.scrollTop=0;}
-  function hasLength(){return HANDS[hs.value] && HANDS[hs.value].flat==null;}
-  function syncLen(){$('#handsLenField').style.display=hasLength()?'block':'none';}
-
-  function openBooking(service){
-    Object.assign(state,{type:null,handsService:null,handsLength:null,feetService:null,addons:[],notes:"",allergies:"",returning:null,first:"",last:"",email:"",phone:"",depositPaid:"",pendingHands:(service&&HANDS[service])?service:null});
-    document.querySelectorAll('.choice,.chip').forEach(c=>c.classList.remove('sel'));
-    ['#fNotes','#fAllergies','#fFirst','#fLast','#fEmail','#fPhone'].forEach(s=>{const el=$(s);if(el)el.value='';});
-    photoFiles=[]; renderThumbs(); depProofFile=null; renderDep();
-    const pc=$('#fPaid'); if(pc)pc.checked=false;
-    $('#fErr').classList.remove('show'); $('#depErr').classList.remove('show');
-    title.textContent='Book your appointment';
-    showStep(1);
-    modal.classList.add('open'); modal.setAttribute('aria-hidden','false'); document.body.style.overflow='hidden';
+  /* ——— dynamic flow (skips toe-type when no toes; skips length for builder/regular gel) ——— */
+  function needLength(){return state.nailtype && state.nailtype!=='Builder Gel' && state.nailtype!=='Regular gel polish';}
+  function flow(){
+    const f=['phone','service','toes'];
+    if(state.toes==='Yes') f.push('toetype');
+    f.push('nailtype');
+    if(needLength()) f.push('length');
+    f.push('shape','design','book');
+    return f;
   }
-  function closeBooking(){ modal.classList.remove('open'); modal.setAttribute('aria-hidden','true'); document.body.style.overflow=''; slot.innerHTML=''; }
+  function renderDots(){
+    const f=flow(), idx=f.indexOf(current);
+    $('#wizDots').innerHTML=f.map((k,i)=>`<i class="${i===idx?'on':(i<idx?'done':'')}"></i>`).join('');
+  }
+  function go(key){
+    current=key;
+    document.querySelectorAll('.step').forEach(s=>s.classList.toggle('active',s.dataset.step===key));
+    renderDots();
+    const b=bodyEl(); if(b)b.scrollTop=0;
+    if(key==='shape')startShapeTyping(); else stopShapeTyping();
+    if(key==='book')enterBook();
+  }
+  function next(){const f=flow(),i=f.indexOf(current);if(i>-1&&i<f.length-1)go(f[i+1]);}
+  function back(){const f=flow(),i=f.indexOf(current);if(i>0)go(f[i-1]);}
 
-  document.querySelectorAll('.choice').forEach(c=>c.addEventListener('click',()=>{
-    document.querySelectorAll('.choice').forEach(x=>x.classList.remove('sel'));
-    c.classList.add('sel'); state.type=c.dataset.type;
-    const hands=state.type!=='Feet only', feet=state.type!=='Hands only';
-    $('#handsBlock').style.display=hands?'block':'none';
-    $('#feetBlock').style.display=feet?'block':'none';
-    if(hands && state.pendingHands) hs.value=state.pendingHands;
-    syncLen();
-    setTimeout(()=>showStep(2),110);
-  }));
-  hs.addEventListener('change',syncLen);
-  document.querySelectorAll('#addonChips .chip').forEach(ch=>ch.addEventListener('click',()=>ch.classList.toggle('sel')));
-  document.querySelectorAll('#returningChips .chip').forEach(ch=>ch.addEventListener('click',()=>{document.querySelectorAll('#returningChips .chip').forEach(x=>x.classList.remove('sel'));ch.classList.add('sel');state.returning=ch.dataset.ret;}));
-  // photo upload
-  function renderThumbs(){$('#thumbs').innerHTML=photoFiles.map((f,i)=>`<div class="th"><img src="${URL.createObjectURL(f)}"><button data-rm="${i}" aria-label="Remove">×</button></div>`).join('');
-    document.querySelectorAll('#thumbs [data-rm]').forEach(b=>b.addEventListener('click',()=>{photoFiles.splice(+b.dataset.rm,1);renderThumbs();}));}
+  function reset(){
+    Object.assign(state,{phone:"",returning:null,customer:null,service:null,toes:null,toetype:null,nailtype:null,length:null,shape:"",notes:"",name:"",ig:""});
+    photoFiles=[]; booked=false; renderThumbs();
+    document.querySelectorAll('.choice').forEach(c=>c.classList.remove('sel'));
+    ['#fPhone','#fShape','#fNotes','#fName','#fIg'].forEach(s=>{const el=$(s);if(el)el.value='';});
+    $('#idBlock').style.display='none'; $('#phoneNav').style.display='flex'; $('#phoneErr').classList.remove('show');
+    slot.innerHTML='';
+  }
+  function openBooking(){reset();title.textContent='Book your appointment';go('phone');modal.classList.add('open');modal.setAttribute('aria-hidden','false');document.body.style.overflow='hidden';setTimeout(()=>{const p=$('#fPhone');if(p)p.focus();},140);}
+  function closeBooking(){modal.classList.remove('open');modal.setAttribute('aria-hidden','true');document.body.style.overflow='';stopShapeTyping();slot.innerHTML='';}
+
+  /* ——— identity: this-device memory first, optional server lookup second ——— */
+  function loadCustomer(){try{return JSON.parse(localStorage.getItem(CUSTOMER_KEY)||'null');}catch(e){return null;}}
+  function saveCustomer(c){try{localStorage.setItem(CUSTOMER_KEY,JSON.stringify(c));}catch(e){}}
+  async function lookup(p10){
+    const local=loadCustomer();
+    if(local && digits(local.phone).slice(-10)===p10) return local;
+    if(LOOKUP_ENDPOINT){
+      try{const r=await fetch(LOOKUP_ENDPOINT,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({phone:p10})});
+        if(r.ok){const j=await r.json(); if(j&&j.found) return {name:j.name||'',phone:j.phone||p10,igHandle:j.igHandle||'',lastSet:j.lastSet||''};}}catch(e){}
+    }
+    return null;
+  }
+  function showIdCard(c){
+    state.customer=c;
+    const rows=[];
+    rows.push(`<div class="row"><span>Phone</span>${prettyPhone(c.phone)}</div>`);
+    if(c.igHandle) rows.push(`<div class="row"><span>Instagram</span>${c.igHandle}</div>`);
+    if(c.lastSet)  rows.push(`<div class="row"><span>Last set</span>${c.lastSet}</div>`);
+    $('#idCard').innerHTML=(c.name?`<div class="nm">${c.name}</div>`:'')+rows.join('');
+    $('#idBlock').style.display='block'; $('#phoneNav').style.display='none';
+  }
+  $('#phoneGo').addEventListener('click',async()=>{
+    const p10=digits($('#fPhone').value).slice(-10);
+    if(p10.length<10){$('#phoneErr').classList.add('show');return;}
+    $('#phoneErr').classList.remove('show'); state.phone=p10;
+    const btn=$('#phoneGo'); btn.textContent='Checking…'; btn.disabled=true;
+    const c=await lookup(p10);
+    btn.textContent='Continue'; btn.disabled=false;
+    if(c) showIdCard(c); else {state.returning='No'; next();}
+  });
+  $('#fPhone').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#phoneGo').click();}});
+  $('#idYes').addEventListener('click',()=>{state.returning='Yes';const c=state.customer||{};state.name=c.name||'';state.ig=c.igHandle||'';next();});
+  $('#idNo').addEventListener('click',()=>{state.returning='No';state.customer=null;state.name='';state.ig='';$('#idBlock').style.display='none';$('#phoneNav').style.display='flex';next();});
+
+  /* ——— choice steps (tap → select → auto-advance) ——— */
+  function bindChoice(attr,key,after){
+    document.querySelectorAll(`.choice[data-${attr}]`).forEach(c=>c.addEventListener('click',()=>{
+      c.closest('.step').querySelectorAll('.choice').forEach(x=>x.classList.remove('sel'));
+      c.classList.add('sel'); state[key]=c.dataset[attr];
+      if(after) after();
+      setTimeout(next,150);
+    }));
+  }
+  bindChoice('service','service');
+  bindChoice('toes','toes',()=>{if(state.toes!=='Yes')state.toetype=null;});
+  bindChoice('toetype','toetype');
+  bindChoice('nailtype','nailtype',()=>{if(!needLength())state.length=null;});
+  bindChoice('length','length');
+
+  /* ——— shape: animated type/backspace placeholder ——— */
+  const SHAPES=['coffin','almond','stiletto','square','ballerina','round','squoval','lipstick'];
+  let shapeTimer=null,si=0,ci=0,del=false;
+  function startShapeTyping(){
+    const inp=$('#fShape'); if(!inp) return; stopShapeTyping();
+    if(inp.value.trim()!==''){inp.placeholder='coffin';return;}
+    const tick=()=>{
+      const w=SHAPES[si];
+      if(!del){ci++; if(ci>w.length){del=true;shapeTimer=setTimeout(tick,1100);return;}}
+      else{ci--; if(ci<0){del=false;si=(si+1)%SHAPES.length;ci=0;shapeTimer=setTimeout(tick,180);return;}}
+      inp.placeholder=w.slice(0,Math.max(0,ci));
+      shapeTimer=setTimeout(tick,del?55:115);
+    };
+    tick();
+  }
+  function stopShapeTyping(){if(shapeTimer){clearTimeout(shapeTimer);shapeTimer=null;}si=0;ci=0;del=false;}
+  $('#fShape').addEventListener('focus',stopShapeTyping);
+  $('#fShape').addEventListener('blur',()=>{if($('#fShape').value.trim()==='')startShapeTyping();});
+  $('#shapeNotSure').addEventListener('click',()=>{$('#fShape').value='Not sure yet';state.shape='Not sure yet';next();});
+  $('#shapeGo').addEventListener('click',()=>{state.shape=$('#fShape').value.trim()||'Not sure yet';next();});
+
+  /* ——— design ——— */
+  function renderThumbs(){const c=$('#thumbs');if(!c)return;c.innerHTML=photoFiles.map((f,i)=>`<div class="th"><img src="${URL.createObjectURL(f)}"><button data-rm="${i}" aria-label="Remove">×</button></div>`).join('');
+    c.querySelectorAll('[data-rm]').forEach(b=>b.addEventListener('click',()=>{photoFiles.splice(+b.dataset.rm,1);renderThumbs();}));}
   $('#fPhotos').addEventListener('change',e=>{photoFiles=photoFiles.concat([...e.target.files].filter(f=>f.type.startsWith('image/'))).slice(0,8);renderThumbs();e.target.value='';});
-  // deposit proof (single screenshot)
-  let depProofFile=null;
-  function renderDep(){const c=$('#depThumbs');if(!c)return;c.innerHTML=depProofFile?`<div class="th"><img src="${URL.createObjectURL(depProofFile)}"><button data-rmdep aria-label="Remove">×</button></div>`:'';const b=c.querySelector('[data-rmdep]');if(b)b.addEventListener('click',()=>{depProofFile=null;renderDep();});}
-  $('#fDepProof').addEventListener('change',e=>{const f=[...e.target.files].find(x=>x.type.startsWith('image/'));if(f)depProofFile=f;renderDep();e.target.value='';});
+  $('#designGo').addEventListener('click',()=>{state.notes=$('#fNotes').value.trim();next();});
 
-  function collect(){
-    const hands=state.type!=='Feet only', feet=state.type!=='Hands only';
-    state.handsService=hands?hs.value:null;
-    state.handsLength=(hands&&hasLength())?hl.value:null;
-    state.feetService=feet?fs.value:null;
-    state.addons=[...document.querySelectorAll('#addonChips .chip.sel')].map(c=>c.dataset.addon);
-    state.notes=$('#fNotes').value.trim(); state.allergies=$('#fAllergies').value.trim();
-    state.first=$('#fFirst').value.trim(); state.last=$('#fLast').value.trim();
-    state.email=$('#fEmail').value.trim(); state.phone=$('#fPhone').value.trim();
+  /* ——— book step: summary + real GHL calendar + deposit ——— */
+  function serviceLine(){
+    let s=state.service||'';
+    if(state.nailtype)s+=` · ${state.nailtype}`;
+    if(state.length)s+=` · ${state.length}`;
+    if(state.shape)s+=` · ${state.shape}`;
+    return s;
+  }
+  function summaryHTML(){
+    const b=[];
+    b.push(`<b>Service:</b> ${state.service||'—'}`);
+    b.push(`<b>Nails:</b> ${state.nailtype||'—'}${state.length?' · '+state.length:''}`);
+    if(state.shape)b.push(`<b>Shape:</b> ${state.shape}`);
+    if(state.toes==='Yes')b.push(`<b>Toes:</b> ${state.toetype||'Yes'}`);
+    if(photoFiles.length)b.push(`<b>Inspo:</b> ${photoFiles.length} photo${photoFiles.length>1?'s':''} attached`);
+    if(state.notes)b.push(`<b>Notes:</b> ${state.notes}`);
+    return b.join('<br>');
+  }
+  function prefillURL(){
+    const p=new URLSearchParams();
+    if(state.name)p.set('first_name',state.name);
+    if(state.phone)p.set('phone',state.phone);
+    const q=p.toString();
+    return GHL_WIDGET_BASE+(q?'?'+q:'');
   }
   function submitIntake(){
     const fd=new FormData();
-    fd.append('firstName',state.first); fd.append('lastName',state.last); fd.append('email',state.email); fd.append('phone',state.phone);
-    fd.append('booking_type',state.type||''); fd.append('hands_service',state.handsService||''); fd.append('hands_length',state.handsLength||'');
-    fd.append('feet_service',state.feetService||''); fd.append('addons',state.addons.join(', '));
-    fd.append('notes',state.notes); fd.append('allergies',state.allergies); fd.append('returning',state.returning||'');
-    fd.append('deposit_paid',state.depositPaid||'Yes');
+    fd.append('firstName',state.name); fd.append('phone',state.phone); fd.append('igHandle',state.ig);
+    fd.append('returning',state.returning||''); fd.append('service',state.service||'');
+    fd.append('toes',state.toes||'No'); fd.append('toe_service',state.toetype||'');
+    fd.append('nail_type',state.nailtype||''); fd.append('length',state.length||'');
+    fd.append('shape',state.shape||''); fd.append('design_notes',state.notes||'');
     photoFiles.forEach(f=>fd.append('photos',f));
-    if(depProofFile) fd.append('depositProof',depProofFile);
-    fetch(INTAKE_ENDPOINT,{method:'POST',body:fd}).catch(()=>{}); // non-blocking; booking proceeds regardless
+    if(INTAKE_ENDPOINT)fetch(INTAKE_ENDPOINT,{method:'POST',body:fd}).catch(()=>{});
   }
-  function estimate(){let t=0;
-    if(state.handsService){const h=HANDS[state.handsService]; t+=h.flat!=null?h.flat:(h[state.handsLength]||h.Short);}
-    if(state.feetService)t+=FEET[state.feetService]||0;
-    state.addons.forEach(a=>t+=ADDONS[a]||0); return t;}
-  function summaryHTML(){
-    const bits=[];
-    if(state.handsService)bits.push(`<b>Hands:</b> ${state.handsService}${state.handsLength?' · '+state.handsLength:''}`);
-    if(state.feetService)bits.push(`<b>Feet:</b> ${state.feetService}`);
-    if(state.addons.length)bits.push(`<b>Add-ons:</b> ${state.addons.join(', ')}`);
-    return bits.join('<br>')+`<br><span class="est">Est. $${estimate()}</span> <span style="opacity:.7">· $10 deposit sent ✓</span>`;
+  function persistCustomer(){saveCustomer({name:state.name||'',phone:state.phone,igHandle:state.ig||'',lastSet:serviceLine()});}
+  function enterBook(){
+    if(state.name)$('#fName').value=state.name;
+    if(state.ig)$('#fIg').value=state.ig;
+    $('#summary').innerHTML=summaryHTML();
+    slot.innerHTML='<iframe src="'+prefillURL()+'" scrolling="no"></iframe>';
+    $('#fName').oninput=()=>{state.name=$('#fName').value.trim();persistCustomer();};
+    $('#fIg').oninput=()=>{state.ig=$('#fIg').value.trim();persistCustomer();};
+    if(!booked){booked=true;submitIntake();persistCustomer();}
   }
-  function prefillURL(){
-    const p=new URLSearchParams(); const set=(k,v)=>{if(v)p.set(k,v)};
-    set('first_name',state.first); set('last_name',state.last); set('email',state.email); set('phone',state.phone);
-    return GHL_WIDGET_BASE+'?'+p.toString();
-  }
-  document.querySelectorAll('[data-next]').forEach(b=>b.addEventListener('click',()=>{
-    const to=+b.dataset.next;
-    if(to===3) collect();
-    if(to===4){ // details -> deposit: validate contact
-      collect();
-      const emailOk=/.+@.+\..+/.test(state.email);
-      if(!state.first || !emailOk){ $('#fErr').classList.add('show'); return; }
-      $('#fErr').classList.remove('show');
-    }
-    if(to===5){ // deposit -> booking: require proof + confirmation
-      if(!$('#fPaid').checked || !depProofFile){ $('#depErr').classList.add('show'); return; }
-      $('#depErr').classList.remove('show');
-      state.depositPaid='Yes';
-      submitIntake();
-      $('#summary').innerHTML=summaryHTML();
-      slot.innerHTML='<iframe src="'+prefillURL()+'" scrolling="no"></iframe>';
-    }
-    showStep(to);
-  }));
-  document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',()=>{ const cur=+b.closest('.step').dataset.step; showStep(Math.max(1,cur-1)); }));
 
-  document.querySelectorAll('[data-book]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();openBooking(el.getAttribute('data-service'));}));
+  /* ——— open/close + page chrome ——— */
+  document.querySelectorAll('[data-book]').forEach(el=>el.addEventListener('click',e=>{e.preventDefault();openBooking();}));
   document.querySelectorAll('[data-close]').forEach(el=>el.addEventListener('click',closeBooking));
+  document.querySelectorAll('[data-back]').forEach(b=>b.addEventListener('click',back));
   modal.addEventListener('click',e=>{if(e.target===modal)closeBooking();});
   document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeBooking();closeLightbox();}});
+
   const lb=document.getElementById('lightbox'), lbImg=document.getElementById('lightboxImg');
   document.querySelectorAll('.gallery .tile img').forEach(img=>img.addEventListener('click',()=>{lbImg.src=img.src;lb.classList.add('open');document.body.style.overflow='hidden';}));
   function closeLightbox(){lb.classList.remove('open');document.body.style.overflow='';}
   lb.addEventListener('click',closeLightbox);
+
   const io=new IntersectionObserver((es)=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.add('in');io.unobserve(en.target);}}),{threshold:.12});
   document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
   // GHL widget auto-resize
